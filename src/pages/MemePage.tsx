@@ -103,9 +103,15 @@ export function MemePage() {
 	return (
 		<div className="flex flex-col gap-3 h-[calc(100vh-8rem)] min-h-0">
 			<header className="flex flex-col gap-0.5 shrink-0">
-				<p className="text-sm">
+				<p className="text-sm flex gap-3">
 					<Link to="/" className="text-neutral-300 hover:text-white underline">
 						{t("app.backNew")}
+					</Link>
+					<Link
+						to={`/view?src=${encodeURIComponent(src)}&from=${encodeURIComponent(`/meme?${params.toString()}`)}`}
+						className="text-neutral-300 hover:text-white underline"
+					>
+						{t("app.viewOriginal")}
 					</Link>
 				</p>
 				<h1 className="text-lg font-semibold text-neutral-100 leading-tight">

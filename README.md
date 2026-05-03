@@ -22,10 +22,11 @@ Built with Claude Code as a "fun with IIIF" experiment.
 - Hash router so it works on GitHub Pages with no server.
 - English + Spanish via react-i18next, with localStorage persistence and `<html lang>` sync.
 - WCAG 2.2 AA pass: focus-visible, landmarks, ARIA tabs, labelled inputs, accessible canvas.
+- "View original" opens the IIIF image in a Samvera Clover deep-zoom viewer (lazy-loaded).
 
 ## Stack
 
-Vite · React 19 · TypeScript strict · Tailwind v4 · Biome v2 · react-router-dom v7 · react-i18next · MDX · `@mediapipe/tasks-vision` · IIIF Image + Presentation APIs · Canvas 2D.
+Vite · React 19 · TypeScript strict · Tailwind v4 · Biome v2 · react-router-dom v7 · react-i18next · MDX · `@mediapipe/tasks-vision` · `@samvera/clover-iiif` · IIIF Image + Presentation APIs · Canvas 2D.
 
 ## Develop
 

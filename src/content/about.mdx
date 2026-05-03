@@ -119,7 +119,15 @@ Spent a moment looking at richer Presentation v3 manifests (Yale, etc.) - `metad
 - `they dont seem that funny though for meme text`
 - `culture could be used perhaps, but i dont want to offend`
 
-#### 13. WCAG 2.2 AA pass
+#### 13. View original via Clover
+
+Added a "View original" link from the meme editor to a `/view` route that mounts Samvera's Clover IIIF `Image` component (deep-zoom OpenSeadragon under the hood). Lazy-loaded so the ~110 KB chunk only ships when someone uses it. The back link round-trips the full meme URL so caption + crop + sunglasses survive the detour.
+
+- `on this page, can we have a link that lets you view the original image in the clover`
+- `we can build the clover 'image' component ourselves`
+- `in view original, when you go 'back', should should take you to the meme editor`
+
+#### 14. WCAG 2.2 AA pass
 
 A skill-driven a11y audit found focus suppression, missing landmarks, low-contrast neutral-400/500 text, no canvas alt, unlabelled inputs, and tab buttons posing as plain buttons. Fixed each - focus-visible outline, `<main>` + `<nav>` + skip link, contrast bumped to neutral-200/300, `role="img" aria-label` on the canvas, real `<label>`s, ARIA tablist for source switching, `lang` attribute synced on locale change.
 

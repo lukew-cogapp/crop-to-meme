@@ -63,6 +63,12 @@ Caption metadata (`title`, `artist`, `date`) gets carried in the URL alongside t
 
 Filename is built from `lib/slug.ts` `memeFilename([title, top, bottom])` so downloads land like `two-sisters-on-the-terrace--this-you--yeah-this-me.jpg`.
 
+### Original-image viewer
+
+`/view?src=<ref>&from=<url>` mounts Samvera's Clover IIIF `Image` component as a deep-zoom viewer (OpenSeadragon-backed). The route is `lazy()`-loaded, so the ~110 KB Clover chunk only downloads when used. The `from` param round-trips the full caller URL so the back link returns to the exact meme state (caption, region, sunglasses).
+
+Clover wants the IIIF Image service ID (no `/info.json` suffix) plus `isTiledImage={true}`. We pass `source.serviceBase` directly.
+
 ### Sunglasses overlay
 
 `lib/sunglasses.ts` exports four styles: `deal-with-it`, `classic`, `aviator`, `round`. Each draws onto the canvas after the image, before the text, rotated to match eye angle.

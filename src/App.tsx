@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Route, Routes } from "react-router-dom";
 import "./providers";
@@ -6,6 +7,10 @@ import { AboutPage } from "./pages/AboutPage";
 import { FacesPage } from "./pages/FacesPage";
 import { HomePage } from "./pages/HomePage";
 import { MemePage } from "./pages/MemePage";
+
+const ViewPage = lazy(() =>
+	import("./pages/ViewPage").then((m) => ({ default: m.ViewPage })),
+);
 
 export default function App() {
 	const { t } = useTranslation();
@@ -36,16 +41,25 @@ export default function App() {
 			</header>
 
 			<main id="main">
-				<Routes>
-					<Route path="/" element={<HomePage />} />
-					<Route path="/faces" element={<FacesPage />} />
-					<Route path="/meme" element={<MemePage />} />
-					<Route path="/about" element={<AboutPage />} />
-					<Route
-						path="*"
-						element={<p className="text-neutral-300">{t("app.notFound")}</p>}
-					/>
-				</Routes>
+				<Suspense
+					fallback={
+						<p role="status" aria-live="polite" className="text-neutral-200">
+							{t("app.loading")}
+						</p>
+					}
+				>
+					<Routes>
+						<Route path="/" element={<HomePage />} />
+						<Route path="/faces" element={<FacesPage />} />
+						<Route path="/meme" element={<MemePage />} />
+						<Route path="/view" element={<ViewPage />} />
+						<Route path="/about" element={<AboutPage />} />
+						<Route
+							path="*"
+							element={<p className="text-neutral-300">{t("app.notFound")}</p>}
+						/>
+					</Routes>
+				</Suspense>
 			</main>
 		</div>
 	);

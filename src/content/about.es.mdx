@@ -80,6 +80,10 @@ Las etiquetas de los puntos clave de MediaPipe son relativas al sujeto, así que
 
 Miramos manifiestos Presentation v3 más ricos (Yale) - `metadata[]` expone Medio, Cultura, Clasificación. Decidimos no alimentar leyendas con esto: casi todo es demasiado seco, y `Cultura` está a un paso de ser ofensivo. Nos quedamos con título/artista/fecha.
 
-#### 13. Pase WCAG 2.2 AA
+#### 13. Ver original con Clover
+
+Añadimos un enlace "Ver original" desde el editor de memes a una ruta `/view` que monta el componente `Image` de Clover IIIF (deep-zoom con OpenSeadragon). Cargado de forma diferida, así los ~110 KB sólo se descargan cuando hace falta. El enlace de "atrás" conserva la URL completa del meme.
+
+#### 14. Pase WCAG 2.2 AA
 
 Una auditoría con la skill correspondiente encontró supresión de focus, falta de landmarks, contraste bajo en neutral-400/500, canvas sin alt, inputs sin etiqueta y botones de tabs disfrazados de botones normales. Todo arreglado.
