@@ -1,0 +1,84 @@
+import { useEffect, useState } from "react";
+import { t } from "../i18n";
+import { detectFaces, expandBox, type FaceBox, scaleBox } from "../lib/faces";
+import { iiifUrlFromBase } from "../lib/iiif";
+import { loadImage } from "../lib/image";
+import { SkeletonGrid } from "./Skeleton";
+
+type Props = {
+	serviceBase: string;
+	fullSize: { width: number; height: number };
+	onPick: (box: FaceBox) => void;
+};
+
+const DETECT_WIDTH = 843;
+
+export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
+	const [faces, setFaces] = useState<FaceBox[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		let cancelled = false;
+		setLoading(true);
+		setError(null);
+		setFaces([]);
+
+		(async () => {
+			try {
+				const detectUrl = iiifUrlFromBase(serviceBase, "full", {
+					width: DETECT_WIDTH,
+				});
+				const img = await loadImage(detectUrl);
+				const detected = await detectFaces(img);
+				const detectSize = {
+					width: img.naturalWidth,
+					height: img.naturalHeight,
+				};
+				const scaled = detected.map((f) =>
+					expandBox(scaleBox(f, detectSize, fullSize), 1.6, fullSize),
+				);
+				if (!cancelled) setFaces(scaled);
+			} catch (e) {
+				if (!cancelled) setError((e as Error).message);
+			} finally {
+				if (!cancelled) setLoading(false);
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [serviceBase, fullSize]);
+
+	if (loading)
+		return (
+			<div className="flex flex-col gap-3">
+				<p className="text-neutral-400 text-sm">{t("faces.detecting")}</p>
+				<SkeletonGrid count={4} />
+			</div>
+		);
+	if (error) return <p className="text-red-400">{error}</p>;
+	if (faces.length === 0)
+		return <p className="text-neutral-400">{t("faces.none")}</p>;
+
+	return (
+		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+			{faces.map((face) => (
+				<button
+					key={`${face.x}-${face.y}-${face.w}`}
+					type="button"
+					onClick={() => onPick(face)}
+					className="rounded-lg overflow-hidden border border-neutral-700 hover:border-neutral-300 transition"
+				>
+					<img
+						src={iiifUrlFromBase(serviceBase, face, { width: 400 })}
+						alt={t("faces.alt")}
+						className="w-full aspect-square object-cover"
+						loading="lazy"
+					/>
+				</button>
+			))}
+		</div>
+	);
+}
