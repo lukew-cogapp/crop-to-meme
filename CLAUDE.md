@@ -32,7 +32,11 @@ Single-page React app. All state in URL search params, so any meme view is a sha
 Concrete providers in `src/providers/`:
 
 - `aic.ts` - Art Institute of Chicago. Search via their public API, IIIF base built from `image_id`. Encodes title/artist/date into the `sourceRef` so MemePage can render captions without re-fetching.
+- `getty.ts` - Getty Museum. Hits `https://www.getty.edu/search/api/search`, filters results to those with an `image_service` thumbnail. Parses the description string for date/artist/medium. Defaults to seeding the search box with `portrait`.
+- `wellcome.ts` - Wellcome Collection. Hits `api.wellcomecollection.org/catalogue/v2/works` with `workType=k,q` (Pictures + Digital Images) and `availabilities=online`. Extracts the IIIF image base from the thumbnail URL pattern.
 - `iiif-paste.ts` - Generic. Accepts an info.json URL, Presentation manifest URL (v2 or v3), or raw JSON paste. Parser in `lib/iiif-source.ts` handles both Presentation versions and falls back through them if structure is ambiguous.
+
+Providers can set `defaultQuery` so the search box prefills when the tab opens (Getty + Wellcome do, AIC explicitly defaults empty so the user sees the prompt).
 
 To add a provider: create `src/providers/<id>.ts`, `registerProvider(...)`, then `import` it from `src/providers/index.ts`. No other file needs to change.
 

@@ -10,6 +10,8 @@ Built with Claude Code as a "fun with IIIF" experiment.
 ## Sources
 
 - **Art Institute of Chicago** - search their collection (portraits filter on by default).
+- **Getty Museum** - search their collection (seeds with "portrait").
+- **Wellcome Collection** - search Pictures + Digital Images (seeds with "portrait").
 - **Paste IIIF URL** - info.json (Image API) or Presentation manifest (v2 or v3) from any IIIF-supporting institution. Paste raw JSON if the host blocks CORS. Extensible - see `src/providers/`.
 
 ## Features
