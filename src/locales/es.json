@@ -16,7 +16,10 @@
 		"howToTitle": "Cómo funciona",
 		"step1": "1. Elige una obra - busca en el Art Institute of Chicago, o pega cualquier URL de info.json o manifiesto IIIF.",
 		"step2": "2. Elige un rostro - MediaPipe detecta los rostros en tu navegador.",
-		"step3": "3. Texto + compartir - leyenda automática desde los metadatos. Edita, mezcla, copia el enlace o descarga JPEG."
+		"step3": "3. Texto + compartir - leyenda automática desde los metadatos. Edita, mezcla, copia el enlace o descarga JPEG.",
+		"randomButton": "🎲 Obra aleatoria",
+		"randomLoading": "Buscando algo…",
+		"randomError": "Sin suerte. Prueba una pestaña abajo."
 	},
 	"search": {
 		"label": "Buscar en {{provider}}",
@@ -47,7 +50,9 @@
 			"deal-with-it": "Deal with it",
 			"classic": "Clásicas",
 			"aviator": "Aviador",
-			"round": "Redondas"
+			"round": "Redondas",
+			"monocle": "Monóculo",
+			"star": "Estrellas Elton"
 		},
 		"copyLink": "🔗 Copiar enlace",
 		"copied": "✓ Copiado",

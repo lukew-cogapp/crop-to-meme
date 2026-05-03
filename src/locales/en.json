@@ -16,7 +16,10 @@
 		"howToTitle": "How it works",
 		"step1": "1. Pick an artwork - search the Art Institute of Chicago, or paste any IIIF info.json / manifest URL.",
 		"step2": "2. Pick a face - MediaPipe runs in your browser to find faces.",
-		"step3": "3. Caption + share - auto-captioned from the artwork's metadata. Edit, shuffle, copy the link, or download as JPEG."
+		"step3": "3. Caption + share - auto-captioned from the artwork's metadata. Edit, shuffle, copy the link, or download as JPEG.",
+		"randomButton": "🎲 Random artwork",
+		"randomLoading": "Finding something…",
+		"randomError": "No luck. Try a tab below."
 	},
 	"search": {
 		"label": "Search {{provider}}",
@@ -47,7 +50,9 @@
 			"deal-with-it": "Deal with it",
 			"classic": "Classic",
 			"aviator": "Aviator",
-			"round": "Round"
+			"round": "Round",
+			"monocle": "Monocle",
+			"star": "Elton stars"
 		},
 		"copyLink": "🔗 Copy share link",
 		"copied": "✓ Copied",

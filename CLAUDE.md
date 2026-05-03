@@ -75,7 +75,7 @@ Clover wants the IIIF Image service ID (no `/info.json` suffix) plus `isTiledIma
 
 ### Sunglasses overlay
 
-`lib/sunglasses.ts` exports four styles: `deal-with-it`, `classic`, `aviator`, `round`. Each draws onto the canvas after the image, before the text, rotated to match eye angle.
+`lib/sunglasses.ts` exports five styles: `deal-with-it`, `classic`, `aviator`, `round`, `monocle`. Each draws onto the canvas after the image, before the text, rotated to match eye angle. Monocle anchors at the right eye (positive x in midpoint frame) instead of straddling both.
 
 - Eyes come from MediaPipe's `FaceDetector` keypoints. The detector returns subject-relative `leftEye`/`rightEye`; MemeEditor reorders by `x` so the rotation maths works regardless of which side of the face the keypoint label refers to.
 - `deal-with-it` is a hardcoded 5-row × 32-col pixel grid drawn with `fillRect` per cell. Eye-anchor columns are constants (`DWI_LEFT_EYE_COL`, `DWI_RIGHT_EYE_COL`) so the glasses scale to the actual eye distance.

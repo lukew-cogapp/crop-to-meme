@@ -6,6 +6,25 @@ import { ProviderSearch } from "../components/ProviderSearch";
 import { listProviders } from "../lib/providers";
 import { pasteRef } from "../providers/iiif-paste";
 
+const RANDOM_SEEDS = [
+	"portrait",
+	"woman",
+	"man",
+	"saint",
+	"queen",
+	"king",
+	"child",
+	"dog",
+	"horse",
+	"angel",
+	"warrior",
+	"selfportrait",
+];
+
+function pickRandom<T>(arr: T[]): T {
+	return arr[Math.floor(Math.random() * arr.length)];
+}
+
 export function HomePage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -14,9 +33,40 @@ export function HomePage() {
 	const active = providers.find((p) => p.id === activeId);
 	const tabsId = useId();
 	const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+	const [randomLoading, setRandomLoading] = useState(false);
+	const [randomError, setRandomError] = useState<string | null>(null);
 
 	const goToFaces = (sourceRef: string) => {
 		navigate(`/faces?src=${encodeURIComponent(sourceRef)}`);
+	};
+
+	const onRandom = async () => {
+		setRandomError(null);
+		setRandomLoading(true);
+		const searchProviders = providers.filter(
+			(p) => p.kind === "search" && p.search,
+		);
+		const tried = new Set<string>();
+		try {
+			while (tried.size < searchProviders.length) {
+				const remaining = searchProviders.filter((p) => !tried.has(p.id));
+				const provider = pickRandom(remaining);
+				tried.add(provider.id);
+				const seed = pickRandom(RANDOM_SEEDS);
+				try {
+					const hits = await provider.search?.(seed);
+					if (hits && hits.length > 0) {
+						goToFaces(pickRandom(hits).sourceRef);
+						return;
+					}
+				} catch {
+					// try next provider
+				}
+			}
+			setRandomError(t("home.randomError"));
+		} finally {
+			setRandomLoading(false);
+		}
 	};
 
 	const providerName = (id: string, fallback: string) =>
@@ -63,6 +113,21 @@ export function HomePage() {
 					<li>{t("home.step3")}</li>
 				</ol>
 			</section>
+			<div className="flex flex-col gap-2">
+				<button
+					type="button"
+					onClick={onRandom}
+					disabled={randomLoading}
+					className="self-start rounded-lg border border-neutral-700 px-4 py-2 hover:border-neutral-400 min-h-[44px] disabled:opacity-50"
+				>
+					{randomLoading ? t("home.randomLoading") : t("home.randomButton")}
+				</button>
+				{randomError && (
+					<p role="alert" className="text-sm text-red-300">
+						{randomError}
+					</p>
+				)}
+			</div>
 			<div
 				role="tablist"
 				aria-label={t("home.sourceTabsLabel")}
