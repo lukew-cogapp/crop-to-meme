@@ -51,6 +51,11 @@ export function MemeEditor({
 	const sunglasses = sunglassesStyle !== "off";
 	const [eyePairs, setEyePairs] = useState<EyePair[]>([]);
 	const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const errorRef = useRef<HTMLParagraphElement>(null);
+
+	useEffect(() => {
+		if (imageError) errorRef.current?.focus();
+	}, [imageError]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -157,8 +162,10 @@ export function MemeEditor({
 				)}
 				{imageError && (
 					<p
+						ref={errorRef}
 						role="alert"
-						className="absolute inset-0 flex items-center justify-center text-red-300 p-4 text-center text-sm"
+						tabIndex={-1}
+						className="absolute inset-0 flex items-center justify-center text-red-300 p-4 text-center text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 					>
 						{imageError}
 					</p>

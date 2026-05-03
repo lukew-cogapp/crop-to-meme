@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type Props = { onSubmit: (input: string) => void };
@@ -12,15 +12,16 @@ const EXAMPLES = [
 
 export function ManifestPaste({ onSubmit }: Props) {
 	const { t } = useTranslation();
+	const inputId = useId();
 	const [value, setValue] = useState("");
 
 	return (
 		<div className="flex flex-col gap-3">
-			<label htmlFor="iiif-input" className="text-sm text-neutral-300">
+			<label htmlFor={inputId} className="text-sm text-neutral-300">
 				{t("paste.label")}
 			</label>
 			<textarea
-				id="iiif-input"
+				id={inputId}
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
 				rows={4}

@@ -9,7 +9,6 @@
 		"back": "← back",
 		"backNew": "← new",
 		"viewOriginal": "View original",
-		"skipToContent": "Skip to content",
 		"primaryNav": "Primary"
 	},
 	"home": {
@@ -64,6 +63,10 @@
 		"architecture": "Architecture",
 		"prompts": "Built with Claude Code",
 		"promptsIntro": "This project was scaffolded and iterated entirely through prompts to Claude."
+	},
+	"view": {
+		"title": "View original",
+		"viewerLabel": "Deep-zoom viewer for {{title}}"
 	},
 	"providers": {
 		"aic": "Art Institute of Chicago",

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { type KeyboardEvent, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ManifestPaste } from "../components/ManifestPaste";
@@ -13,6 +13,7 @@ export function HomePage() {
 	const [activeId, setActiveId] = useState(providers[0]?.id ?? "");
 	const active = providers.find((p) => p.id === activeId);
 	const tabsId = useId();
+	const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
 	const goToFaces = (sourceRef: string) => {
 		navigate(`/faces?src=${encodeURIComponent(sourceRef)}`);
@@ -20,6 +21,27 @@ export function HomePage() {
 
 	const providerName = (id: string, fallback: string) =>
 		(t as (k: string, opts?: object) => string)(id, { defaultValue: fallback });
+
+	const onTabKey = (e: KeyboardEvent<HTMLButtonElement>, idx: number) => {
+		if (
+			e.key !== "ArrowRight" &&
+			e.key !== "ArrowLeft" &&
+			e.key !== "Home" &&
+			e.key !== "End"
+		)
+			return;
+		e.preventDefault();
+		let next = idx;
+		if (e.key === "ArrowRight") next = (idx + 1) % providers.length;
+		if (e.key === "ArrowLeft")
+			next = (idx - 1 + providers.length) % providers.length;
+		if (e.key === "Home") next = 0;
+		if (e.key === "End") next = providers.length - 1;
+		const target = providers[next];
+		if (!target) return;
+		setActiveId(target.id);
+		tabRefs.current[next]?.focus();
+	};
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -34,7 +56,8 @@ export function HomePage() {
 				>
 					{t("home.howToTitle")}
 				</h2>
-				<ol className="space-y-1 list-none">
+				{/* biome-ignore lint/a11y/noRedundantRoles: VoiceOver+Safari strip list semantics when list-style is none */}
+				<ol role="list" className="space-y-1 list-none">
 					<li>{t("home.step1")}</li>
 					<li>{t("home.step2")}</li>
 					<li>{t("home.step3")}</li>
@@ -45,18 +68,23 @@ export function HomePage() {
 				aria-label={t("home.sourceTabsLabel")}
 				className="flex flex-wrap gap-2"
 			>
-				{providers.map((p) => {
+				{providers.map((p, i) => {
 					const selected = activeId === p.id;
 					const name = p.nameKey ? providerName(p.nameKey, p.name) : p.name;
 					return (
 						<button
 							key={p.id}
+							ref={(el) => {
+								tabRefs.current[i] = el;
+							}}
 							role="tab"
 							type="button"
+							tabIndex={selected ? 0 : -1}
 							aria-selected={selected}
 							aria-controls={`${tabsId}-${p.id}`}
 							id={`${tabsId}-tab-${p.id}`}
 							onClick={() => setActiveId(p.id)}
+							onKeyDown={(e) => onTabKey(e, i)}
 							className={`rounded-md border px-3 py-1.5 text-sm min-h-[36px] ${
 								selected
 									? "bg-white text-black border-white"

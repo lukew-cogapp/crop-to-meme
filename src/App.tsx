@@ -16,9 +16,6 @@ export default function App() {
 	const { t } = useTranslation();
 	return (
 		<div className="min-h-screen p-4 sm:p-8 max-w-5xl mx-auto">
-			<a href="#main" className="skip-link">
-				{t("app.skipToContent")}
-			</a>
 			<header className="mb-8 flex items-baseline justify-between gap-4">
 				<div>
 					<Link to="/" className="text-3xl font-bold hover:text-white">

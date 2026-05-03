@@ -26,20 +26,7 @@ export function ViewPage() {
 			.catch((e) => setError((e as Error).message));
 	}, [src, t]);
 
-	if (error)
-		return (
-			<p role="alert" className="text-red-300">
-				{error}
-			</p>
-		);
-	if (!source)
-		return (
-			<p role="status" aria-live="polite" className="text-neutral-200">
-				{t("app.loadingSource")}
-			</p>
-		);
-
-	const serviceId = source.serviceBase.replace(/\/+$/, "");
+	const title = source?.label ?? t("view.title");
 
 	return (
 		<div className="flex flex-col gap-4 h-[calc(100vh-8rem)] min-h-0">
@@ -52,13 +39,32 @@ export function ViewPage() {
 						{t("app.back")}
 					</Link>
 				</p>
-				<h1 className="text-lg font-semibold text-neutral-100">
-					{source.label}
-				</h1>
+				<h1 className="text-lg font-semibold text-neutral-100">{title}</h1>
 			</header>
-			<div className="flex-1 min-h-0 bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800">
-				<Image src={serviceId} isTiledImage={true} />
-			</div>
+
+			{error && (
+				<p role="alert" className="text-red-300">
+					{error}
+				</p>
+			)}
+
+			{!source && !error && (
+				<p role="status" aria-live="polite" className="text-neutral-200">
+					{t("app.loadingSource")}
+				</p>
+			)}
+
+			{source && (
+				<section
+					aria-label={t("view.viewerLabel", { title: source.label })}
+					className="flex-1 min-h-0 bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800"
+				>
+					<Image
+						src={source.serviceBase.replace(/\/+$/, "")}
+						isTiledImage={true}
+					/>
+				</section>
+			)}
 		</div>
 	);
 }
