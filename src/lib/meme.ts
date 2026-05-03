@@ -51,7 +51,7 @@ function fitText(
 }
 
 function fontStr(size: number): string {
-	return `${size}px Impact, "Anton", "Arial Black", sans-serif`;
+	return `${size}px "Anton", Impact, "Arial Black", sans-serif`;
 }
 
 export function drawMeme(

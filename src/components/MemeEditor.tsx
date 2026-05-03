@@ -110,15 +110,25 @@ export function MemeEditor({
 
 	useEffect(() => {
 		if (!ready || !canvasRef.current || !imgRef.current) return;
-		drawMeme(
-			canvasRef.current,
-			imgRef.current,
-			{ top, bottom },
-			{
-				sunglasses: sunglasses ? eyePairs : undefined,
-				sunglassesStyle: sunglasses ? sunglassesStyle : undefined,
-			},
-		);
+		let cancelled = false;
+		(async () => {
+			if (document.fonts?.load) {
+				await document.fonts.load("1em Anton");
+			}
+			if (cancelled || !canvasRef.current || !imgRef.current) return;
+			drawMeme(
+				canvasRef.current,
+				imgRef.current,
+				{ top, bottom },
+				{
+					sunglasses: sunglasses ? eyePairs : undefined,
+					sunglassesStyle: sunglasses ? sunglassesStyle : undefined,
+				},
+			);
+		})();
+		return () => {
+			cancelled = true;
+		};
 	}, [ready, top, bottom, sunglasses, sunglassesStyle, eyePairs]);
 
 	const onDownload = async () => {
