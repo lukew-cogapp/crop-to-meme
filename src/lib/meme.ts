@@ -1,5 +1,51 @@
 export type MemeText = { top: string; bottom: string };
 
+const MAX_LINES = 3;
+
+function wrapLines(
+	ctx: CanvasRenderingContext2D,
+	text: string,
+	maxWidth: number,
+): string[] {
+	const words = text.split(/\s+/).filter(Boolean);
+	if (words.length === 0) return [];
+	const lines: string[] = [];
+	let current = words[0];
+	for (let i = 1; i < words.length; i++) {
+		const next = `${current} ${words[i]}`;
+		if (ctx.measureText(next).width <= maxWidth) {
+			current = next;
+		} else {
+			lines.push(current);
+			current = words[i];
+		}
+	}
+	lines.push(current);
+	return lines;
+}
+
+function fitText(
+	ctx: CanvasRenderingContext2D,
+	text: string,
+	maxWidth: number,
+	startSize: number,
+	minSize: number,
+): { lines: string[]; size: number } {
+	let size = startSize;
+	while (size >= minSize) {
+		ctx.font = fontStr(size);
+		const lines = wrapLines(ctx, text, maxWidth);
+		if (lines.length <= MAX_LINES) return { lines, size };
+		size = Math.floor(size * 0.9);
+	}
+	ctx.font = fontStr(minSize);
+	return { lines: wrapLines(ctx, text, maxWidth), size: minSize };
+}
+
+function fontStr(size: number): string {
+	return `${size}px Impact, "Anton", "Arial Black", sans-serif`;
+}
+
 export function drawMeme(
 	canvas: HTMLCanvasElement,
 	img: HTMLImageElement,
@@ -12,48 +58,81 @@ export function drawMeme(
 	canvas.height = img.naturalHeight;
 	ctx.drawImage(img, 0, 0);
 
-	const fontSize = Math.max(32, Math.round(canvas.width / 12));
-	ctx.font = `${fontSize}px Impact, "Anton", "Arial Black", sans-serif`;
+	const baseSize = Math.max(32, Math.round(canvas.width / 12));
+	const minSize = Math.max(20, Math.round(baseSize * 0.5));
+	const sideMargin = baseSize * 0.4;
+	const maxWidth = canvas.width - sideMargin * 2;
+	const edgeMargin = baseSize * 0.6;
+
 	ctx.textAlign = "center";
 	ctx.fillStyle = "#fff";
 	ctx.strokeStyle = "#000";
-	ctx.lineWidth = Math.max(2, fontSize / 16);
 	ctx.lineJoin = "round";
 
-	const margin = fontSize * 0.6;
 	if (text.top) {
-		ctx.textBaseline = "top";
-		drawStrokedLine(ctx, text.top.toUpperCase(), canvas.width / 2, margin);
+		const { lines, size } = fitText(ctx, text.top, maxWidth, baseSize, minSize);
+		drawLines(ctx, lines, size, canvas.width / 2, edgeMargin, "top");
 	}
 	if (text.bottom) {
-		ctx.textBaseline = "bottom";
-		drawStrokedLine(
+		const { lines, size } = fitText(
 			ctx,
-			text.bottom.toUpperCase(),
+			text.bottom,
+			maxWidth,
+			baseSize,
+			minSize,
+		);
+		drawLines(
+			ctx,
+			lines,
+			size,
 			canvas.width / 2,
-			canvas.height - margin,
+			canvas.height - edgeMargin,
+			"bottom",
 		);
 	}
 }
 
-function drawStrokedLine(
+function drawLines(
 	ctx: CanvasRenderingContext2D,
-	text: string,
+	lines: string[],
+	size: number,
 	x: number,
-	y: number,
+	yEdge: number,
+	anchor: "top" | "bottom",
 ): void {
-	ctx.strokeText(text, x, y);
-	ctx.fillText(text, x, y);
+	ctx.font = fontStr(size);
+	ctx.lineWidth = Math.max(2, size / 16);
+	const lineHeight = size * 1.05;
+
+	if (anchor === "top") {
+		ctx.textBaseline = "top";
+		for (let i = 0; i < lines.length; i++) {
+			const text = lines[i].toUpperCase();
+			const y = yEdge + i * lineHeight;
+			ctx.strokeText(text, x, y);
+			ctx.fillText(text, x, y);
+		}
+	} else {
+		ctx.textBaseline = "bottom";
+		for (let i = 0; i < lines.length; i++) {
+			const text = lines[lines.length - 1 - i].toUpperCase();
+			const y = yEdge - i * lineHeight;
+			ctx.strokeText(text, x, y);
+			ctx.fillText(text, x, y);
+		}
+	}
 }
 
 export function canvasToBlob(
 	canvas: HTMLCanvasElement,
-	type = "image/png",
+	type = "image/jpeg",
+	quality = 0.92,
 ): Promise<Blob> {
 	return new Promise((resolve, reject) => {
 		canvas.toBlob(
 			(b) => (b ? resolve(b) : reject(new Error("toBlob failed"))),
 			type,
+			quality,
 		);
 	});
 }

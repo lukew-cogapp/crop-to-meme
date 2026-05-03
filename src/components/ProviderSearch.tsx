@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { t } from "../i18n";
+import { useEffect, useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Provider, SearchHit } from "../lib/providers";
 import { SkeletonGrid } from "./Skeleton";
 
@@ -9,6 +9,8 @@ type Props = {
 };
 
 export function ProviderSearch({ provider, onPick }: Props) {
+	const { t } = useTranslation();
+	const inputId = useId();
 	const [query, setQuery] = useState("");
 	const [hits, setHits] = useState<SearchHit[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -19,7 +21,7 @@ export function ProviderSearch({ provider, onPick }: Props) {
 		let cancelled = false;
 		setLoading(true);
 		setError(null);
-		const t = setTimeout(() => {
+		const handle = setTimeout(() => {
 			provider
 				.search?.(query)
 				.then((r) => !cancelled && setHits(r))
@@ -28,23 +30,31 @@ export function ProviderSearch({ provider, onPick }: Props) {
 		}, 300);
 		return () => {
 			cancelled = true;
-			clearTimeout(t);
+			clearTimeout(handle);
 		};
 	}, [provider, query]);
 
 	return (
 		<div className="flex flex-col gap-4">
+			<label htmlFor={inputId} className="sr-only">
+				{t("search.label", { provider: provider.name })}
+			</label>
 			<input
+				id={inputId}
 				type="search"
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
 				placeholder={t("search.placeholder", { provider: provider.name })}
-				className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-4 py-3 text-lg outline-none focus:border-neutral-400"
+				className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-4 py-3 text-lg focus-visible:border-neutral-100"
 			/>
-			{error && <p className="text-red-400">{error}</p>}
+			{error && (
+				<p role="alert" className="text-red-300">
+					{error}
+				</p>
+			)}
 			{loading && hits.length === 0 && <SkeletonGrid count={8} />}
 			{!loading && !error && hits.length === 0 && (
-				<p className="text-neutral-500 text-sm">{t("search.noResults")}</p>
+				<p className="text-neutral-300 text-sm">{t("search.noResults")}</p>
 			)}
 			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 				{hits.map((h) => (
@@ -52,7 +62,7 @@ export function ProviderSearch({ provider, onPick }: Props) {
 						key={h.id}
 						type="button"
 						onClick={() => onPick(h)}
-						className="rounded-lg overflow-hidden bg-neutral-900 border border-neutral-800 hover:border-neutral-400 transition"
+						className="rounded-lg overflow-hidden bg-neutral-900 border border-neutral-800 hover:border-neutral-400 transition text-left"
 					>
 						<img
 							src={h.thumbnailUrl}
@@ -60,10 +70,10 @@ export function ProviderSearch({ provider, onPick }: Props) {
 							className="w-full aspect-square object-cover"
 							loading="lazy"
 						/>
-						<div className="p-2 text-left">
+						<div className="p-2">
 							<p className="text-sm font-medium truncate">{h.title}</p>
 							{h.subtitle && (
-								<p className="text-xs text-neutral-400 truncate">
+								<p className="text-xs text-neutral-300 truncate">
 									{h.subtitle}
 								</p>
 							)}

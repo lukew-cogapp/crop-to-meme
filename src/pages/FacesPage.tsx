@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { FacePicker } from "../components/FacePicker";
-import { t } from "../i18n";
 import type { FaceBox } from "../lib/faces";
 import { providerForRef, type ResolvedSource } from "../lib/providers";
 
 export function FacesPage() {
+	const { t } = useTranslation();
 	const [params] = useSearchParams();
 	const navigate = useNavigate();
 	const src = params.get("src") ?? "";
@@ -24,7 +25,7 @@ export function FacesPage() {
 			.resolve(src)
 			.then(setSource)
 			.catch((e) => setError((e as Error).message));
-	}, [src]);
+	}, [src, t]);
 
 	const onPick = (face: FaceBox) => {
 		const meta = source?.metadata;
@@ -41,14 +42,24 @@ export function FacesPage() {
 		navigate(`/meme?${next.toString()}`);
 	};
 
-	if (error) return <p className="text-red-400">{error}</p>;
+	if (error)
+		return (
+			<p role="alert" className="text-red-300">
+				{error}
+			</p>
+		);
 	if (!source)
-		return <p className="text-neutral-400">{t("app.loadingSource")}</p>;
+		return (
+			<p role="status" aria-live="polite" className="text-neutral-200">
+				{t("app.loadingSource")}
+			</p>
+		);
 
 	return (
 		<div className="flex flex-col gap-4">
-			<p className="text-neutral-300">
-				<Link to="/" className="text-neutral-500 hover:underline">
+			<h1 className="sr-only">{source.label}</h1>
+			<p className="text-neutral-200">
+				<Link to="/" className="text-neutral-300 hover:text-white underline">
 					{t("app.back")}
 				</Link>{" "}
 				· <span className="font-semibold">{source.label}</span>

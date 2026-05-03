@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { MemeEditor } from "../components/MemeEditor";
-import { t } from "../i18n";
 import { generateCaption } from "../lib/captions";
 import type { FaceBox } from "../lib/faces";
 import { providerForRef, type ResolvedSource } from "../lib/providers";
 
 export function MemePage() {
+	const { t } = useTranslation();
 	const [params, setParams] = useSearchParams();
 	const src = params.get("src") ?? "";
 	const region: FaceBox = {
@@ -41,7 +42,7 @@ export function MemePage() {
 			.resolve(src)
 			.then(setSource)
 			.catch((e) => setError((e as Error).message));
-	}, [src]);
+	}, [src, t]);
 
 	useEffect(() => {
 		if (params.get("top") !== null || params.get("bottom") !== null) return;
@@ -55,10 +56,10 @@ export function MemePage() {
 	const top = params.get("top") ?? "";
 	const bottom = params.get("bottom") ?? "";
 
-	const setText = (t: string, b: string) => {
+	const setText = (topText: string, bottomText: string) => {
 		const next = new URLSearchParams(params);
-		next.set("top", t);
-		next.set("bottom", b);
+		next.set("top", topText);
+		next.set("bottom", bottomText);
 		setParams(next, { replace: true });
 	};
 
@@ -69,18 +70,37 @@ export function MemePage() {
 
 	const shareUrl = window.location.href;
 
-	if (error) return <p className="text-red-400">{error}</p>;
+	if (error)
+		return (
+			<p role="alert" className="text-red-300">
+				{error}
+			</p>
+		);
 	if (!source || !region.w)
-		return <p className="text-neutral-400">{t("app.loading")}</p>;
+		return (
+			<p role="status" aria-live="polite" className="text-neutral-200">
+				{t("app.loading")}
+			</p>
+		);
+
+	const title = meta.title ?? source.label;
+	const subParts = [meta.artist, meta.date].filter(Boolean) as string[];
 
 	return (
-		<div className="flex flex-col gap-4">
-			<p className="text-neutral-300 text-sm">
-				<Link to="/" className="text-neutral-500 hover:underline">
-					{t("app.backNew")}
-				</Link>{" "}
-				· {source.label}
-			</p>
+		<div className="flex flex-col gap-3 h-[calc(100vh-8rem)] min-h-0">
+			<header className="flex flex-col gap-0.5 shrink-0">
+				<p className="text-sm">
+					<Link to="/" className="text-neutral-300 hover:text-white underline">
+						{t("app.backNew")}
+					</Link>
+				</p>
+				<h1 className="text-lg font-semibold text-neutral-100 leading-tight">
+					{title}
+				</h1>
+				{subParts.length > 0 && (
+					<p className="text-xs text-neutral-300">{subParts.join(" · ")}</p>
+				)}
+			</header>
 			<MemeEditor
 				serviceBase={source.serviceBase}
 				region={region}

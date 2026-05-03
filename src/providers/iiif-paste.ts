@@ -4,6 +4,7 @@ import { type Provider, registerProvider } from "../lib/providers";
 export const iiifPasteProvider: Provider = {
 	id: "iiif",
 	name: "Paste IIIF URL",
+	nameKey: "providers.iiifPaste",
 	kind: "paste",
 	resolve: async (ref) => {
 		const url = ref.startsWith("iiif:")

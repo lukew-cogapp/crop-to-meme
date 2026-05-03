@@ -1,0 +1,75 @@
+## Acerca de
+
+Explora obras IIIF, detecta rostros, recorta una porción, añade texto estilo meme y comparte por URL. Todo en el navegador, sin servidor.
+
+[Código en GitHub →](https://github.com/lukew-cogapp/crop-to-meme)
+
+### Tecnología
+
+- Vite + React 19 + TypeScript estricto
+- Tailwind v4 (configuración CSS-first)
+- Biome v2 (lint + formato)
+- react-router-dom v7 (router por hash para GitHub Pages)
+- react-i18next + i18next-browser-languagedetector (inglés y español)
+- MDX para esta página
+- `@mediapipe/tasks-vision` FaceDetector (WebGPU/WASM, en el dispositivo)
+- IIIF Image API 2.0 para recortes + info.json
+- IIIF Presentation API v2 + v3 para pegar tu propio manifiesto
+- Canvas 2D para el render del meme, exportación JPEG con calidad 0.92
+- GitHub Actions → despliegue en Pages
+
+### Arquitectura
+
+- `lib/` — módulos puros: cliente AIC, generador de URLs IIIF, parser de fuentes IIIF, wrapper del detector facial, cargador de imágenes, render del meme, plantillas de leyenda.
+- `providers/` — registro de fuentes ampliable (búsqueda AIC, pegar IIIF). Añadir nuevos proveedores no requiere tocar las páginas.
+- `pages/` — Inicio / Rostros / Meme / Acerca de. Cada página lee su estado de los parámetros de la URL, así cualquier meme es un enlace compartible.
+- `locales/en.json` y `locales/es.json` — todas las cadenas de UI viven aquí, accesibles vía `useTranslation()`. Los datos en tiempo de ejecución (títulos de obras, etiquetas IIIF) viven en el código.
+- `content/about.mdx` y `about.es.mdx` — texto largo, intercambiado en runtime según el idioma detectado.
+
+### Hecho con Claude Code
+
+Esta fue una conversación abierta con Claude Code, no una especificación. Cada capítulo es el prompt que disparó la siguiente porción de trabajo.
+
+#### 1. Elegir dirección
+
+Empezamos abierto. Claude propuso varios experimentos IIIF — visores, máquinas del tiempo, generadores de bordados. Elegimos "recorta y memea" por ser lo más juguetón y entregable en una sesión.
+
+#### 2. Elegir el detector facial
+
+Probamos primero el `FaceDetector` nativo del navegador (sólo Chrome) antes de pasar a MediaPipe Face Detector por compatibilidad y calidad.
+
+#### 3. Definir las reglas pronto
+
+Arquitectura modular, despliegue en GitHub Pages, versiones más recientes. Eso marcó cada decisión posterior.
+
+#### 4. Afinar la búsqueda en AIC
+
+Un sub-agente revisó la documentación del API del Art Institute of Chicago y encontró el filtro de retrato más limpio. Lo cableamos como toggle.
+
+#### 5. Leyendas sin LLM
+
+En lugar de conectar Anthropic o un VLM en el navegador, Claude propuso un registro de plantillas alimentado por los metadatos. Refactorizado a registros con interpolación `{slot}` y filtro `needs[]`. Buscamos frases típicas de meme para ampliarlo.
+
+#### 6. Trae tu propio IIIF
+
+Generalizamos la capa de fuentes detrás de una interfaz `Provider`. Añadir más proveedores es un fichero por cada uno.
+
+#### 7. URLs compartibles
+
+react-router-dom con router por hash. Cada vista de meme codifica fuente, región, leyenda y metadatos en el query string.
+
+#### 8. i18n bien hecho
+
+Primero un `t()` casero. Luego español. Luego un context. Luego Claude señaló que estábamos reinventando react-i18next — cambiamos a esa librería, conservando los JSON.
+
+#### 9. MDX para esta página
+
+Esta narrativa era un enredo de TSX. Pasada a MDX para que el texto pueda crecer sin tocar componentes.
+
+#### 10. Salto de línea + JPEG
+
+Un título largo de Renoir desbordó el canvas, así que el render del meme aprendió a partir por palabra y reducir tamaño si aún no entra. La exportación pasó de PNG a JPEG (0.92).
+
+#### 11. Pase WCAG 2.2 AA
+
+Una auditoría con la skill correspondiente encontró supresión de focus, falta de landmarks, contraste bajo en neutral-400/500, canvas sin alt, inputs sin etiqueta y botones de tabs disfrazados de botones normales. Todo arreglado.

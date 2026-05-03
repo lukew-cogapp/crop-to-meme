@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { t } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { detectFaces, expandBox, type FaceBox, scaleBox } from "../lib/faces";
 import { iiifUrlFromBase } from "../lib/iiif";
 import { loadImage } from "../lib/image";
@@ -14,6 +14,7 @@ type Props = {
 const DETECT_WIDTH = 843;
 
 export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
+	const { t } = useTranslation();
 	const [faces, setFaces] = useState<FaceBox[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -53,18 +54,23 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 
 	if (loading)
 		return (
-			<div className="flex flex-col gap-3">
-				<p className="text-neutral-400 text-sm">{t("faces.detecting")}</p>
+			<div role="status" aria-live="polite" className="flex flex-col gap-3">
+				<p className="text-neutral-200 text-sm">{t("faces.detecting")}</p>
 				<SkeletonGrid count={4} />
 			</div>
 		);
-	if (error) return <p className="text-red-400">{error}</p>;
+	if (error)
+		return (
+			<p role="alert" className="text-red-300">
+				{error}
+			</p>
+		);
 	if (faces.length === 0)
-		return <p className="text-neutral-400">{t("faces.none")}</p>;
+		return <p className="text-neutral-200">{t("faces.none")}</p>;
 
 	return (
 		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-			{faces.map((face) => (
+			{faces.map((face, i) => (
 				<button
 					key={`${face.x}-${face.y}-${face.w}`}
 					type="button"
@@ -73,7 +79,7 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 				>
 					<img
 						src={iiifUrlFromBase(serviceBase, face, { width: 400 })}
-						alt={t("faces.alt")}
+						alt={t("faces.alt", { n: i + 1 })}
 						className="w-full aspect-square object-cover"
 						loading="lazy"
 					/>

@@ -1,0 +1,62 @@
+{
+	"app": {
+		"title": "Recorta y Memea",
+		"tagline": "Obras IIIF · detección facial con MediaPipe · enlaces compartibles",
+		"about": "Acerca de",
+		"notFound": "No encontrado.",
+		"loading": "Cargando…",
+		"loadingSource": "Cargando fuente…",
+		"back": "← atrás",
+		"backNew": "← nuevo",
+		"skipToContent": "Saltar al contenido",
+		"primaryNav": "Principal"
+	},
+	"home": {
+		"sourceTabsLabel": "Fuente"
+	},
+	"search": {
+		"label": "Buscar en {{provider}}",
+		"placeholder": "Buscar en {{provider}}…",
+		"noResults": "Sin resultados."
+	},
+	"paste": {
+		"label": "Pega una URL info.json o de manifiesto Presentation IIIF (o JSON crudo)",
+		"placeholder": "https://…/info.json  o  https://…/manifest",
+		"load": "Cargar",
+		"exampleAic": "AIC: Renoir, Dos hermanas"
+	},
+	"faces": {
+		"detecting": "Detectando rostros…",
+		"none": "No se encontraron rostros. Prueba otra obra.",
+		"alt": "Rostro detectado {{n}}",
+		"loadingStatus": "Cargando miniaturas de rostros"
+	},
+	"meme": {
+		"topLabel": "Texto superior",
+		"bottomLabel": "Texto inferior",
+		"topPlaceholder": "Texto superior",
+		"bottomPlaceholder": "Texto inferior",
+		"shuffle": "🎲 Mezclar leyenda",
+		"copyLink": "🔗 Copiar enlace",
+		"copied": "✓ Copiado",
+		"download": "Descargar JPG",
+		"downloadFile": "meme.jpg",
+		"canvasLabel": "Meme: {{top}} / {{bottom}}",
+		"renderingStatus": "Generando meme"
+	},
+	"about": {
+		"heading": "Acerca de",
+		"summary": "Explora obras IIIF, detecta rostros, recorta una porción, añade texto estilo meme y comparte por URL. Todo en el navegador, sin servidor.",
+		"stack": "Tecnología",
+		"architecture": "Arquitectura",
+		"prompts": "Hecho con Claude Code",
+		"promptsIntro": "Este proyecto se construyó iterando con Claude."
+	},
+	"providers": {
+		"aic": "Art Institute of Chicago",
+		"iiifPaste": "Pegar URL IIIF"
+	},
+	"errors": {
+		"unknownSource": "fuente desconocida"
+	}
+}

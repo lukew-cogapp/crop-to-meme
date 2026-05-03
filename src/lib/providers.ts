@@ -19,6 +19,7 @@ export type ResolvedSource = {
 export type Provider = {
 	id: string;
 	name: string;
+	nameKey?: string;
 	kind: "search" | "paste";
 	search?: (query: string) => Promise<SearchHit[]>;
 	resolve: (sourceRef: string) => Promise<ResolvedSource>;

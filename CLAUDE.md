@@ -12,26 +12,27 @@ npm run lint     # biome check .
 npm run format   # biome check . --write (fixes + organises imports)
 ```
 
-No test runner configured. Type-check is part of `build` (`tsc -b`).
+No test runner. Type-check is part of `build` (`tsc -b`).
 
-GH Pages deploy: push to `main` → `.github/workflows/deploy.yml` builds with `GITHUB_PAGES_BASE=/<repo>/` and publishes via `actions/deploy-pages`.
+GH Pages deploy: push to `main` → `.github/workflows/deploy.yml` builds with `GITHUB_PAGES_BASE=/<repo>/` and publishes via `actions/deploy-pages`. Pages must be enabled in repo settings (Source: GitHub Actions) — `gh api repos/<owner>/<repo>/pages -f build_type=workflow -X POST` enables it.
 
 ## Architecture
 
-Single-page React app. All state in URL search params, so any meme view is a shareable link. Hash router (`HashRouter`) so it works on GitHub Pages without server config.
+Single-page React app. All state in URL search params, so any meme view is a shareable link. Hash router (`HashRouter`) — works on GitHub Pages without server config.
 
 ### Source providers (pluggable)
 
 `src/lib/providers.ts` defines the `Provider` interface. Each provider implements:
 
-- `kind: "search" | "paste"` — drives which input UI renders
-- `search?(query)` — returns `SearchHit[]` w/ thumbnail + opaque `sourceRef` string
-- `resolve(sourceRef)` — returns `ResolvedSource` with `serviceBase` (IIIF Image API base URL), dims, label, optional metadata
+- `kind: "search" | "paste"` — drives which input UI renders.
+- `name` (English fallback) and optional `nameKey` (i18n lookup) so built-in providers can be translated.
+- `search?(query)` — returns `SearchHit[]` w/ thumbnail + opaque `sourceRef` string.
+- `resolve(sourceRef)` — returns `ResolvedSource` with `serviceBase` (IIIF Image API base URL), dims, label, optional metadata.
 
 Concrete providers in `src/providers/`:
 
 - `aic.ts` — Art Institute of Chicago. Search via their public API, IIIF base built from `image_id`. Encodes title/artist/date into the `sourceRef` so MemePage can render captions without re-fetching.
-- `iiif-paste.ts` — Generic. Accepts an info.json URL, Presentation manifest URL (v2 or v3), or raw JSON. Parser in `lib/iiif-source.ts` handles both Presentation versions.
+- `iiif-paste.ts` — Generic. Accepts an info.json URL, Presentation manifest URL (v2 or v3), or raw JSON paste. Parser in `lib/iiif-source.ts` handles both Presentation versions and falls back through them if structure is ambiguous.
 
 To add a provider: create `src/providers/<id>.ts`, `registerProvider(...)`, then `import` it from `src/providers/index.ts`. No other file needs to change.
 
@@ -39,48 +40,63 @@ To add a provider: create `src/providers/<id>.ts`, `registerProvider(...)`, then
 
 ### URL state machine
 
-- `/` → `HomePage` — provider tabs, search or paste
+- `/` → `HomePage` — provider tabs (ARIA `role="tablist"`), search or paste
 - `/faces?src=<ref>` → `FacesPage` — resolves source, runs face detection, shows thumbnails
 - `/meme?src=<ref>&x&y&w&h&top&bottom&title&artist&date` → `MemePage` — all meme state in URL
 - `/about` → `AboutPage`
 
-Caption metadata (`title`, `artist`, `date`) gets carried in the URL alongside the crop region. The MemePage seeds `top`/`bottom` from `generateCaption(meta)` if not in URL, then writes them back to the URL via `setSearchParams({ replace: true })` so refreshes persist.
+Caption metadata (`title`, `artist`, `date`) gets carried in the URL alongside the crop region. The MemePage seeds `top`/`bottom` from `generateCaption(meta)` if not in URL, then writes them back via `setSearchParams({ replace: true })` so refreshes persist.
 
 ### IIIF helpers
 
-`lib/iiif.ts` has both `iiifUrl(imageId, ...)` (AIC convenience) and `iiifUrlFromBase(serviceBase, ...)` (generic). Components always use the generic form; `serviceBase` comes from the resolved provider source.
+`lib/iiif.ts` has `iiifUrl(imageId, ...)` (AIC convenience) and `iiifUrlFromBase(serviceBase, ...)` (generic). Components always use the generic form; `serviceBase` comes from the resolved provider source.
 
-`lib/iiif-source.ts` parses Presentation API v2 (`sequences[].canvases[].images[].resource`) and v3 (`items[].items[].items[].body`) plus standalone info.json. Falls through versions if structure is ambiguous.
+`lib/iiif-source.ts` parses Presentation API v2 (`sequences[].canvases[].images[].resource`) and v3 (`items[].items[].items[].body`) plus standalone info.json. The fetch step catches network errors and rethrows with a CORS-aware hint pointing the user at the raw-JSON paste fallback.
 
 ### Face detection
 
-`lib/faces.ts` wraps MediaPipe's `FaceDetector` (`@mediapipe/tasks-vision`). Singleton `detectorPromise` so model loads once. Detection runs on a downscaled image (`DETECT_WIDTH = 843`); boxes are then `scaleBox`-ed back to full image coords and `expandBox`-ed (factor 1.6) so the crop has padding around the face. WASM + model load from jsDelivr/Google CDN.
+`lib/faces.ts` wraps MediaPipe's `FaceDetector` (`@mediapipe/tasks-vision`). Singleton `detectorPromise` so the model loads once. Detection runs on a downscaled image (`DETECT_WIDTH = 843`); boxes are then `scaleBox`-ed back to full image coords and `expandBox`-ed (factor 1.6) so the crop has padding around the face. WASM + model load from jsDelivr/Google CDN.
 
 ### Meme rendering
 
-`lib/meme.ts` draws onto a Canvas 2D context: image, then Impact-style stroked white text top/bottom, sized relative to canvas width. Export via `canvasToBlob` + `downloadBlob`.
+`lib/meme.ts` draws onto a Canvas 2D context. Word-wraps top/bottom text against `canvas.width - 2*sideMargin`, capping at 3 lines and shrinking the font (down to ~50% of base) if it still won't fit. White Impact text with thick black stroke. Export defaults to JPEG quality 0.92 — paintings don't compress as PNG.
 
 ### Captions
 
-`lib/captions.ts` is a template registry. Each template is `(meta) => MemeText` where `meta = { title, artist, date }`. Pure function, deterministic given a seed. The shuffle button in MemeEditor calls `generateCaption(meta)` with a fresh random seed.
+`lib/captions.ts` is a template registry. Each template is a data record `{ top, bottom, needs?: Slot[] }`. `generateCaption(meta)` filters templates by `needs` (so paste-IIIF sources without metadata only get generic templates), picks one by seed, then interpolates `{title}`, `{titleLower}`, `{artistShort}`, `{year}`. Pure function.
 
-These templates are *generated content* (the meme itself), not UI chrome — they live in `lib/`, not in `locales/`.
+These templates are *generated content*, not UI chrome — they live in `lib/`, not in `locales/`.
 
 ### i18n
 
-`src/i18n.ts` is a typed `t(key, vars?)` helper backed by `src/locales/en.json`. The `TKey` type is computed from the JSON shape so unknown keys fail at compile time.
+Uses **react-i18next** + i18next-browser-languagedetector. Init in `src/i18n.ts`. JSON dicts in `src/locales/{en,es}.json`. Detected order: localStorage (`locale`) → navigator. Switching languages also writes `document.documentElement.lang` via the `languageChanged` event so screen readers pick up the change.
+
+Components use `useTranslation()` directly: `const { t } = useTranslation()`. Interpolation syntax is `{{var}}` (i18next style).
+
+About page is MDX (`content/about.mdx` and `about.es.mdx`), swapped at runtime in `AboutPage` based on `i18n.resolvedLanguage`.
 
 Rules:
 
-- All UI strings (labels, placeholders, buttons, alt text, error messages) → en.json.
-- Runtime data (artwork titles from APIs, IIIF labels from manifests, provider names) → stays in code.
-- Interpolation uses `{name}` placeholders, never string concatenation — word order varies by language.
-- Caption templates (`lib/captions.ts`) are content, not chrome — separate from i18n.
+- All UI strings → `locales/*.json`.
+- Runtime data (artwork titles from APIs, IIIF labels) → stays in code.
+- Provider names: built-ins set `nameKey` so they translate; third-party providers can omit it and use `name` directly.
+- Caption templates → content, not chrome — separate from i18n.
+
+### Accessibility (WCAG 2.2 AA)
+
+- `:focus-visible` outline defined in `index.css` — never remove it. Inputs use `focus-visible:border-neutral-100`, not `focus:`.
+- `<main id="main">` landmark; skip link at top of `App.tsx`. `<nav aria-label>` in header.
+- Every page has an `<h1>` (often `sr-only` when the visual title sits in the header).
+- Inputs have `<label htmlFor>` (use `useId()`).
+- Source tabs use `role="tablist"` / `role="tab"` / `aria-selected` / `aria-controls`.
+- Loading states use `role="status" aria-live="polite"`. Errors use `role="alert"`.
+- Meme `<canvas>` has `role="img"` and dynamic `aria-label` describing top/bottom text.
+- Text colour: prefer `text-neutral-200`/`-300`. `text-neutral-400`/`-500` fail contrast on the dark background — don't reach for them.
 
 ## Tooling notes
 
 - Tailwind v4 via `@tailwindcss/vite`. CSS-first config in `src/index.css` (`@theme` block). No `tailwind.config.js`.
 - Biome v2 for both lint and format. Tabs, double quotes, organise imports on. CSS uses `tailwindDirectives` parser option.
-- TypeScript strict, `noUnusedLocals`, `noUnusedParameters`. Prefix unused params with `_`.
-- React 19, react-router-dom v7.
+- TypeScript strict, `noUnusedLocals`, `noUnusedParameters`, `resolveJsonModule`. Prefix unused params with `_`.
+- React 19, react-router-dom v7, react-i18next, MDX via `@mdx-js/rollup`.
 - `vite.config.ts` reads `GITHUB_PAGES_BASE` from env so dev runs at `/` and CI builds at `/<repo>/`.

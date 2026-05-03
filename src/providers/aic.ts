@@ -7,6 +7,7 @@ const BASE = "https://www.artic.edu/iiif/2";
 export const aicProvider: Provider = {
 	id: "aic",
 	name: "Art Institute of Chicago",
+	nameKey: "providers.aic",
 	kind: "search",
 	search: async (query) => {
 		const r = await searchArtworks(query, { portraitsOnly: true });

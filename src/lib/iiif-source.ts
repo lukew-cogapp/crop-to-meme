@@ -123,7 +123,14 @@ export async function loadIiifSource(input: string): Promise<IiifImage[]> {
 			trimmed.endsWith("/info.json") || trimmed.includes("manifest")
 				? trimmed
 				: `${trimmed.replace(/\/$/, "")}/info.json`;
-		const res = await fetch(url);
+		let res: Response;
+		try {
+			res = await fetch(url);
+		} catch {
+			throw new Error(
+				"could not fetch URL — likely CORS-blocked. Try pasting the JSON directly.",
+			);
+		}
 		if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
 		json = (await res.json()) as AnyJson;
 	}

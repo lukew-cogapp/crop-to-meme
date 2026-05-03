@@ -9,22 +9,30 @@
 		"preview": "vite preview",
 		"lint": "biome check .",
 		"format": "biome check . --write",
-		"deploy": "npm run build && gh-pages -d dist"
+		"deploy": "npm run build && gh-pages -d dist",
+		"prepare": "lefthook install || true"
 	},
 	"dependencies": {
+		"@mdx-js/react": "^3.1.1",
 		"@mediapipe/tasks-vision": "^0.10.35",
+		"i18next": "^26.0.8",
+		"i18next-browser-languagedetector": "^8.2.1",
 		"react": "^19.2.5",
 		"react-dom": "^19.2.5",
+		"react-i18next": "^17.0.6",
 		"react-router-dom": "^7.14.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.14",
+		"@mdx-js/rollup": "^3.1.1",
 		"@tailwindcss/vite": "^4.2.4",
+		"@types/mdx": "^2.0.13",
 		"@types/node": "^24.12.2",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^6.0.1",
 		"gh-pages": "^6.3.0",
+		"lefthook": "^2.1.6",
 		"tailwindcss": "^4.2.4",
 		"typescript": "~6.0.2",
 		"vite": "^8.0.10"

@@ -30,7 +30,7 @@ export async function searchArtworks(
 	query: string,
 	opts: SearchOpts = {},
 ): Promise<SearchResponse> {
-	const { page = 1, limit = 20, portraitsOnly = true } = opts;
+	const { page = 1, limit = 30, portraitsOnly = true } = opts;
 	const url = new URL(`${AIC_API}/artworks/search`);
 	if (query.trim()) url.searchParams.set("q", query);
 	url.searchParams.set("fields", FIELDS);

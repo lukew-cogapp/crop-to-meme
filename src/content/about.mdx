@@ -1,0 +1,108 @@
+## About
+
+Browse IIIF artworks, detect faces, crop a tile, slap meme text on top, share via URL. All client-side, no server.
+
+[Source on GitHub →](https://github.com/lukew-cogapp/crop-to-meme)
+
+### Stack
+
+- Vite + React 19 + TypeScript strict
+- Tailwind v4 (CSS-first config)
+- Biome v2 (lint + format)
+- react-router-dom v7 (hash router for GitHub Pages)
+- react-i18next + i18next-browser-languagedetector (English + Spanish)
+- MDX for this page (so it stays editable)
+- `@mediapipe/tasks-vision` FaceDetector (WebGPU/WASM, on-device)
+- IIIF Image API 2.0 for crops + info.json
+- IIIF Presentation API v2 + v3 for paste-your-own manifests
+- Canvas 2D for meme rendering, JPEG export at quality 0.92
+- GitHub Actions → Pages deploy
+
+### Architecture
+
+- `lib/` — pure modules: AIC client, IIIF URL builder, IIIF source parser, face detector wrapper, image loader, meme renderer, caption templater
+- `providers/` — pluggable source registry (AIC search, paste-IIIF). Add new providers without touching pages.
+- `pages/` — Home / Faces / Meme / About. Each page reads its state from URL search params, so any meme is a shareable link.
+- `locales/en.json` and `locales/es.json` — every UI string lives here behind `useTranslation()`. Runtime data (artwork titles, IIIF labels) stays in code. Provider names use `nameKey` to opt into translation.
+- `content/about.mdx` and `about.es.mdx` — long-form copy, swapped at runtime by detected locale.
+
+### Built with Claude Code
+
+This was a loose conversation with Claude Code, not a spec. Each chapter below is the prompt that drove the next slab of work.
+
+#### 1. Pick a direction
+
+Started open. Claude pitched several IIIF experiments — viewers, time-machines, embroidery generators. "Crop to meme" felt the most playful and shippable in a session.
+
+- `what could we do that would class as 'fun with iiif'`
+- `I like crop to meme, maybe using AIC's API? and react-vite-tailwind`
+
+#### 2. Pick a face detector
+
+Tried browser-native `FaceDetector` first (Chrome-only, free, fast) before Claude's web search confirmed MediaPipe is the 2026 pick over the unmaintained face-api.js.
+
+- `I want to do face detect`
+- `websearch for best face detection options`
+- `lets use media pipe then`
+
+#### 3. Set the rules early
+
+Modular architecture, GitHub Pages deploy, latest stable versions. That brief shaped every later decision — pure `lib/` modules, no server, hash routing.
+
+- `also make sure we build this is a nice, abstract way. plan to deploy on gh pages`
+- `websearch to make sure we're on the latest versions / techniques`
+
+#### 4. Sharpen the AIC search
+
+A sub-agent dug through AIC API docs to find the cleanest portrait filter. Wired it as a toggle, not a hard filter, so free-text search still works.
+
+- `for the AIC API, they should have a filter for portraits that we should use, check their docs with a subagent`
+- `or maybe we just have a filter _option_ but can still search`
+
+#### 5. Captions without an LLM
+
+Could have wired Anthropic or run an in-browser VLM. Instead Claude proposed a template registry seeded by AIC metadata. Refactored to data records with `{slot}` interpolation and a `needs[]` filter so generic-source memes stay sensible. Web-searched popular meme phrasing to expand the pool, including "this is fine".
+
+- `is there a way, without wiring up an API to e.g. anthropic, that we could generate captions based on the content?`
+- `could this be better abstracted / more readable?`
+- `websearch for more common meme text that would help`
+
+#### 6. Bring your own IIIF
+
+Generalised the source layer behind a `Provider` interface. AIC search and paste-IIIF (info.json or Presentation v2/v3 manifest) both implement it. New providers are one file each.
+
+- `lets make it so that you paste your own manifest / info.json in`
+- `lets not add europeana, but abstract so we add new ones later`
+
+#### 7. Shareable URLs
+
+Added react-router-dom with a hash router for GitHub Pages. Every meme view encodes source ref, crop region, caption, and artwork metadata in the query string — copy-link puts the exact meme back together for anyone.
+
+- `add simple routing (react router?) so our pages have URLs. the final makememe should should references to the info.json and caption, so they can be shared`
+
+#### 8. i18n properly
+
+First a homemade `t()` helper backed by `en.json`. Then Spanish. Then a context for switching. Then Claude flagged that this was reinventing react-i18next — swapped to that, kept the same JSON files, gained plural/fallback handling for free.
+
+- `put all interface strings in an en.json`
+- `can we add a spanish version, too, and have a language switcher at the top`
+- `is there a simpler way to deal with react i18n`
+
+#### 9. MDX for this page
+
+This narrative was a tangle of TSX. Moved to MDX so the prose can grow without touching component code.
+
+- `is there a super standard lib that means we can use markdown (mdx?) for our about page`
+
+#### 10. Real text wrapping + JPEG
+
+A long Renoir title overflowed the canvas, so the meme renderer learned to wrap by measuring word widths and shrink-fit if it still won't fit. Switched export from PNG to JPEG (0.92) — paintings don't compress well as PNG.
+
+- `over a certain length of text, we might need to split over 2 lines`
+- `can the download be jpeg? png for paintings is not efficient`
+
+#### 11. WCAG 2.2 AA pass
+
+A skill-driven a11y audit found focus suppression, missing landmarks, low-contrast neutral-400/500 text, no canvas alt, unlabelled inputs, and tab buttons posing as plain buttons. Fixed each — focus-visible outline, `<main>` + `<nav>` + skip link, contrast bumped to neutral-200/300, `role="img" aria-label` on the canvas, real `<label>`s, ARIA tablist for source switching, `lang` attribute synced on locale change.
+
+- `do an a11y assessment across the site, I want AA 2.2`

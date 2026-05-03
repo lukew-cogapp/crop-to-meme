@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { t } from "../i18n";
+import { useTranslation } from "react-i18next";
 
 type Props = { onSubmit: (input: string) => void };
 
 const EXAMPLES = [
 	{
-		labelKey: "paste.exampleWellcome" as const,
-		url: "https://iiif.wellcomecollection.org/image/L0027013/info.json",
+		labelKey: "paste.exampleAic" as const,
+		url: "https://www.artic.edu/iiif/2/3a608f55-d76e-fa96-d0b1-0789fbc48f1e/info.json",
 	},
 ];
 
 export function ManifestPaste({ onSubmit }: Props) {
+	const { t } = useTranslation();
 	const [value, setValue] = useState("");
 
 	return (
@@ -24,7 +25,7 @@ export function ManifestPaste({ onSubmit }: Props) {
 				onChange={(e) => setValue(e.target.value)}
 				rows={4}
 				placeholder={t("paste.placeholder")}
-				className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-4 py-3 font-mono text-sm outline-none focus:border-neutral-400"
+				className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-4 py-3 font-mono text-sm focus-visible:border-neutral-100"
 			/>
 			<div className="flex flex-wrap gap-2 text-xs">
 				{EXAMPLES.map((ex) => (

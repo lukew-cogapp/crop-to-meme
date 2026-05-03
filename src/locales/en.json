@@ -7,32 +7,42 @@
 		"loading": "Loading…",
 		"loadingSource": "Loading source…",
 		"back": "← back",
-		"backNew": "← new"
+		"backNew": "← new",
+		"skipToContent": "Skip to content",
+		"primaryNav": "Primary"
 	},
-	"home": {},
+	"home": {
+		"sourceTabsLabel": "Source"
+	},
 	"search": {
-		"placeholder": "Search {provider}…",
+		"label": "Search {{provider}}",
+		"placeholder": "Search {{provider}}…",
 		"noResults": "No results."
 	},
 	"paste": {
 		"label": "Paste a IIIF info.json URL or Presentation manifest URL (or raw JSON)",
 		"placeholder": "https://…/info.json  or  https://…/manifest",
 		"load": "Load",
-		"exampleWellcome": "Wellcome (info.json)"
+		"exampleAic": "AIC: Renoir, Two Sisters"
 	},
 	"faces": {
 		"detecting": "Detecting faces…",
 		"none": "No faces found. Try another work.",
-		"alt": "Detected face"
+		"alt": "Detected face {{n}}",
+		"loadingStatus": "Loading face thumbnails"
 	},
 	"meme": {
+		"topLabel": "Top text",
+		"bottomLabel": "Bottom text",
 		"topPlaceholder": "Top text",
 		"bottomPlaceholder": "Bottom text",
 		"shuffle": "🎲 Shuffle caption",
 		"copyLink": "🔗 Copy share link",
 		"copied": "✓ Copied",
-		"download": "Download PNG",
-		"downloadFile": "meme.png"
+		"download": "Download JPG",
+		"downloadFile": "meme.jpg",
+		"canvasLabel": "Meme: {{top}} / {{bottom}}",
+		"renderingStatus": "Rendering meme"
 	},
 	"about": {
 		"heading": "About",
@@ -40,7 +50,11 @@
 		"stack": "Stack",
 		"architecture": "Architecture",
 		"prompts": "Built with Claude Code",
-		"promptsIntro": "This project was scaffolded and iterated entirely through prompts to Claude. The conversation, in order:"
+		"promptsIntro": "This project was scaffolded and iterated entirely through prompts to Claude."
+	},
+	"providers": {
+		"aic": "Art Institute of Chicago",
+		"iiifPaste": "Paste IIIF URL"
 	},
 	"errors": {
 		"unknownSource": "unknown source"

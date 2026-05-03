@@ -31,7 +31,11 @@ const TEMPLATES: Template[] = [
 	{ top: "me explaining", bottom: "{title}", needs: ["title"] },
 	{ top: "nobody:", bottom: "{title}", needs: ["title"] },
 	{ top: "{title}", bottom: "fr fr", needs: ["title"] },
-	{ top: "every morning", bottom: "looking like {titleLower}", needs: ["title"] },
+	{
+		top: "every morning",
+		bottom: "looking like {titleLower}",
+		needs: ["title"],
+	},
 	{ top: "they call me", bottom: "{title}", needs: ["title"] },
 	{ top: "i am once again", bottom: "{title}", needs: ["title"] },
 	{ top: "tag yourself", bottom: "i'm {title}", needs: ["title"] },
@@ -40,10 +44,18 @@ const TEMPLATES: Template[] = [
 	{ top: "{artistShort} be like", bottom: "trust me bro", needs: ["artist"] },
 	{ top: "{artistShort}", bottom: "after one ale", needs: ["artist"] },
 	{ top: "what {artistShort} sees", bottom: "what i see", needs: ["artist"] },
-	{ top: "{artistShort} explaining", bottom: "the rent is due", needs: ["artist"] },
+	{
+		top: "{artistShort} explaining",
+		bottom: "the rent is due",
+		needs: ["artist"],
+	},
 
 	// date
-	{ top: "pov: it's {year}", bottom: "and you forgot the bread", needs: ["date"] },
+	{
+		top: "pov: it's {year}",
+		bottom: "and you forgot the bread",
+		needs: ["date"],
+	},
 	{ top: "tell me you're from", bottom: "{year}", needs: ["date"] },
 	{ top: "{year} called", bottom: "wants its drip back", needs: ["date"] },
 	{ top: "guess who just discovered", bottom: "{year}", needs: ["date"] },
