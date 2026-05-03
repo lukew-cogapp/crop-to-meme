@@ -71,6 +71,7 @@
 	"providers": {
 		"aic": "Art Institute of Chicago",
 		"getty": "Getty Museum",
+		"wellcome": "Wellcome Collection",
 		"iiifPaste": "Pegar URL IIIF"
 	},
 	"errors": {
