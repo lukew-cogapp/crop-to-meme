@@ -44,5 +44,5 @@ export function providerForRef(sourceRef: string): Provider | undefined {
 	for (const p of registry.values()) {
 		if (sourceRef.startsWith(`${p.id}:`)) return p;
 	}
-	return registry.get("iiif");
+	return undefined;
 }

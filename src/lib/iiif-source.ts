@@ -119,8 +119,18 @@ export async function loadIiifSource(input: string): Promise<IiifImage[]> {
 	if (trimmed.startsWith("{")) {
 		json = JSON.parse(trimmed) as AnyJson;
 	} else {
+		let parsed: URL;
+		try {
+			parsed = new URL(trimmed);
+		} catch {
+			throw new Error("not a valid URL");
+		}
+		if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+			throw new Error(`unsupported protocol: ${parsed.protocol}`);
+		}
+		const path = parsed.pathname;
 		const url =
-			trimmed.endsWith("/info.json") || trimmed.includes("manifest")
+			path.endsWith("/info.json") || /\/manifest(\.json)?$/.test(path)
 				? trimmed
 				: `${trimmed.replace(/\/$/, "")}/info.json`;
 		let res: Response;

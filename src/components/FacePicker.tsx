@@ -18,6 +18,8 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 	const [faces, setFaces] = useState<FaceBox[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const fullW = fullSize.width;
+	const fullH = fullSize.height;
 
 	useEffect(() => {
 		let cancelled = false;
@@ -36,8 +38,9 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 					width: img.naturalWidth,
 					height: img.naturalHeight,
 				};
+				const target = { width: fullW, height: fullH };
 				const scaled = detected.map((f) =>
-					expandBox(scaleBox(f, detectSize, fullSize), 1.6, fullSize),
+					expandBox(scaleBox(f, detectSize, target), 1.6, target),
 				);
 				if (!cancelled) setFaces(scaled);
 			} catch (e) {
@@ -50,7 +53,7 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 		return () => {
 			cancelled = true;
 		};
-	}, [serviceBase, fullSize]);
+	}, [serviceBase, fullW, fullH]);
 
 	if (loading)
 		return (

@@ -47,23 +47,36 @@ export function MemeEditor({
 	const imgRef = useRef<HTMLImageElement | null>(null);
 	const [ready, setReady] = useState(false);
 	const [copied, setCopied] = useState(false);
+	const [imageError, setImageError] = useState<string | null>(null);
 	const sunglasses = sunglassesStyle !== "off";
 	const [eyePairs, setEyePairs] = useState<EyePair[]>([]);
+	const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
 		setReady(false);
+		setImageError(null);
 		setEyePairs([]);
 		const url = iiifUrlFromBase(serviceBase, region, { width: RENDER_WIDTH });
-		loadImage(url).then((img) => {
-			if (cancelled) return;
-			imgRef.current = img;
-			setReady(true);
-		});
+		loadImage(url)
+			.then((img) => {
+				if (cancelled) return;
+				imgRef.current = img;
+				setReady(true);
+			})
+			.catch((e: Error) => {
+				if (!cancelled) setImageError(e.message);
+			});
 		return () => {
 			cancelled = true;
 		};
 	}, [serviceBase, region]);
+
+	useEffect(() => {
+		return () => {
+			if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (!ready || !imgRef.current || eyePairs.length > 0 || !sunglasses) return;
@@ -116,7 +129,8 @@ export function MemeEditor({
 	const onCopyLink = async () => {
 		await navigator.clipboard.writeText(shareUrl);
 		setCopied(true);
-		setTimeout(() => setCopied(false), 1500);
+		if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+		copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
 	};
 
 	const canvasLabel = t("meme.canvasLabel", {
@@ -133,13 +147,21 @@ export function MemeEditor({
 					aria-label={canvasLabel}
 					className={`max-h-full max-w-full w-auto h-auto block object-contain ${ready ? "" : "invisible"}`}
 				/>
-				{!ready && (
+				{!ready && !imageError && (
 					<>
 						<Skeleton className="w-full aspect-square rounded-none absolute inset-0" />
 						<span className="sr-only" role="status">
 							{t("meme.renderingStatus")}
 						</span>
 					</>
+				)}
+				{imageError && (
+					<p
+						role="alert"
+						className="absolute inset-0 flex items-center justify-center text-red-300 p-4 text-center text-sm"
+					>
+						{imageError}
+					</p>
 				)}
 			</div>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
