@@ -9,6 +9,7 @@ export const aicProvider: Provider = {
 	name: "Art Institute of Chicago",
 	nameKey: "providers.aic",
 	kind: "search",
+	defaultQuery: "",
 	search: async (query) => {
 		const r = await searchArtworks(query, { portraitsOnly: true });
 		return r.data

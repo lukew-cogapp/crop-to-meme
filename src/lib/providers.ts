@@ -21,6 +21,7 @@ export type Provider = {
 	name: string;
 	nameKey?: string;
 	kind: "search" | "paste";
+	defaultQuery?: string;
 	search?: (query: string) => Promise<SearchHit[]>;
 	resolve: (sourceRef: string) => Promise<ResolvedSource>;
 	renderInput?: () => ReactNode;

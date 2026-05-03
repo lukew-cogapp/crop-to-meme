@@ -11,7 +11,7 @@ type Props = {
 export function ProviderSearch({ provider, onPick }: Props) {
 	const { t } = useTranslation();
 	const inputId = useId();
-	const [query, setQuery] = useState("");
+	const [query, setQuery] = useState(provider.defaultQuery ?? "");
 	const [hits, setHits] = useState<SearchHit[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
