@@ -24,6 +24,22 @@ export function HomePage() {
 	return (
 		<div className="flex flex-col gap-6">
 			<h1 className="sr-only">{t("app.title")}</h1>
+			<section
+				aria-labelledby="howto-heading"
+				className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 text-sm text-neutral-200"
+			>
+				<h2
+					id="howto-heading"
+					className="text-base font-semibold mb-2 text-neutral-100"
+				>
+					{t("home.howToTitle")}
+				</h2>
+				<ol className="space-y-1 list-none">
+					<li>{t("home.step1")}</li>
+					<li>{t("home.step2")}</li>
+					<li>{t("home.step3")}</li>
+				</ol>
+			</section>
 			<div
 				role="tablist"
 				aria-label={t("home.sourceTabsLabel")}

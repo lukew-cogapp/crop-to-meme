@@ -1,3 +1,8 @@
+declare module "*.svg" {
+	const src: string;
+	export default src;
+}
+
 declare module "*.mdx" {
 	import type { ComponentType } from "react";
 

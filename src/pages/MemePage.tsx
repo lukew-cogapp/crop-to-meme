@@ -5,6 +5,9 @@ import { MemeEditor } from "../components/MemeEditor";
 import { generateCaption } from "../lib/captions";
 import type { FaceBox } from "../lib/faces";
 import { providerForRef, type ResolvedSource } from "../lib/providers";
+import { SUNGLASSES_STYLES, type SunglassesStyle } from "../lib/sunglasses";
+
+const VALID_SG: ReadonlySet<string> = new Set([...SUNGLASSES_STYLES, "off"]);
 
 export function MemePage() {
 	const { t } = useTranslation();
@@ -55,6 +58,10 @@ export function MemePage() {
 
 	const top = params.get("top") ?? "";
 	const bottom = params.get("bottom") ?? "";
+	const sgRaw = params.get("sg") ?? "off";
+	const sunglassesStyle: SunglassesStyle | "off" = VALID_SG.has(sgRaw)
+		? (sgRaw as SunglassesStyle | "off")
+		: "off";
 
 	const setText = (topText: string, bottomText: string) => {
 		const next = new URLSearchParams(params);
@@ -66,6 +73,13 @@ export function MemePage() {
 	const shuffle = () => {
 		const cap = generateCaption(meta);
 		setText(cap.top, cap.bottom);
+	};
+
+	const setSunglasses = (s: SunglassesStyle | "off") => {
+		const next = new URLSearchParams(params);
+		if (s === "off") next.delete("sg");
+		else next.set("sg", s);
+		setParams(next, { replace: true });
 	};
 
 	const shareUrl = window.location.href;
@@ -109,6 +123,9 @@ export function MemePage() {
 				onChangeText={setText}
 				onShuffle={shuffle}
 				shareUrl={shareUrl}
+				filenameHint={title}
+				sunglassesStyle={sunglassesStyle}
+				onChangeSunglasses={setSunglasses}
 			/>
 		</div>
 	);

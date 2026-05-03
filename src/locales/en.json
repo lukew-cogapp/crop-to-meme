@@ -12,7 +12,11 @@
 		"primaryNav": "Primary"
 	},
 	"home": {
-		"sourceTabsLabel": "Source"
+		"sourceTabsLabel": "Source",
+		"howToTitle": "How it works",
+		"step1": "1. Pick an artwork - search the Art Institute of Chicago, or paste any IIIF info.json / manifest URL.",
+		"step2": "2. Pick a face - MediaPipe runs in your browser to find faces.",
+		"step3": "3. Caption + share - auto-captioned from the artwork's metadata. Edit, shuffle, copy the link, or download as JPEG."
 	},
 	"search": {
 		"label": "Search {{provider}}",
@@ -37,6 +41,14 @@
 		"topPlaceholder": "Top text",
 		"bottomPlaceholder": "Bottom text",
 		"shuffle": "🎲 Shuffle caption",
+		"sunglasses": "🕶️ Sunglasses",
+		"sunglassesOff": "Off",
+		"sunglassesStyle": {
+			"deal-with-it": "Deal with it",
+			"classic": "Classic",
+			"aviator": "Aviator",
+			"round": "Round"
+		},
 		"copyLink": "🔗 Copy share link",
 		"copied": "✓ Copied",
 		"download": "Download JPG",

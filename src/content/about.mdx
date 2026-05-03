@@ -20,11 +20,11 @@ Browse IIIF artworks, detect faces, crop a tile, slap meme text on top, share vi
 
 ### Architecture
 
-- `lib/` — pure modules: AIC client, IIIF URL builder, IIIF source parser, face detector wrapper, image loader, meme renderer, caption templater
-- `providers/` — pluggable source registry (AIC search, paste-IIIF). Add new providers without touching pages.
-- `pages/` — Home / Faces / Meme / About. Each page reads its state from URL search params, so any meme is a shareable link.
-- `locales/en.json` and `locales/es.json` — every UI string lives here behind `useTranslation()`. Runtime data (artwork titles, IIIF labels) stays in code. Provider names use `nameKey` to opt into translation.
-- `content/about.mdx` and `about.es.mdx` — long-form copy, swapped at runtime by detected locale.
+- `lib/` - pure modules: AIC client, IIIF URL builder, IIIF source parser, face detector wrapper, image loader, meme renderer, caption templater
+- `providers/` - pluggable source registry (AIC search, paste-IIIF). Add new providers without touching pages.
+- `pages/` - Home / Faces / Meme / About. Each page reads its state from URL search params, so any meme is a shareable link.
+- `locales/en.json` and `locales/es.json` - every UI string lives here behind `useTranslation()`. Runtime data (artwork titles, IIIF labels) stays in code. Provider names use `nameKey` to opt into translation.
+- `content/about.mdx` and `about.es.mdx` - long-form copy, swapped at runtime by detected locale.
 
 ### Built with Claude Code
 
@@ -32,7 +32,7 @@ This was a loose conversation with Claude Code, not a spec. Each chapter below i
 
 #### 1. Pick a direction
 
-Started open. Claude pitched several IIIF experiments — viewers, time-machines, embroidery generators. "Crop to meme" felt the most playful and shippable in a session.
+Started open. Claude pitched several IIIF experiments - viewers, time-machines, embroidery generators. "Crop to meme" felt the most playful and shippable in a session.
 
 - `what could we do that would class as 'fun with iiif'`
 - `I like crop to meme, maybe using AIC's API? and react-vite-tailwind`
@@ -47,7 +47,7 @@ Tried browser-native `FaceDetector` first (Chrome-only, free, fast) before Claud
 
 #### 3. Set the rules early
 
-Modular architecture, GitHub Pages deploy, latest stable versions. That brief shaped every later decision — pure `lib/` modules, no server, hash routing.
+Modular architecture, GitHub Pages deploy, latest stable versions. That brief shaped every later decision - pure `lib/` modules, no server, hash routing.
 
 - `also make sure we build this is a nice, abstract way. plan to deploy on gh pages`
 - `websearch to make sure we're on the latest versions / techniques`
@@ -76,13 +76,13 @@ Generalised the source layer behind a `Provider` interface. AIC search and paste
 
 #### 7. Shareable URLs
 
-Added react-router-dom with a hash router for GitHub Pages. Every meme view encodes source ref, crop region, caption, and artwork metadata in the query string — copy-link puts the exact meme back together for anyone.
+Added react-router-dom with a hash router for GitHub Pages. Every meme view encodes source ref, crop region, caption, and artwork metadata in the query string - copy-link puts the exact meme back together for anyone.
 
 - `add simple routing (react router?) so our pages have URLs. the final makememe should should references to the info.json and caption, so they can be shared`
 
 #### 8. i18n properly
 
-First a homemade `t()` helper backed by `en.json`. Then Spanish. Then a context for switching. Then Claude flagged that this was reinventing react-i18next — swapped to that, kept the same JSON files, gained plural/fallback handling for free.
+First a homemade `t()` helper backed by `en.json`. Then Spanish. Then a context for switching. Then Claude flagged that this was reinventing react-i18next - swapped to that, kept the same JSON files, gained plural/fallback handling for free.
 
 - `put all interface strings in an en.json`
 - `can we add a spanish version, too, and have a language switcher at the top`
@@ -96,13 +96,31 @@ This narrative was a tangle of TSX. Moved to MDX so the prose can grow without t
 
 #### 10. Real text wrapping + JPEG
 
-A long Renoir title overflowed the canvas, so the meme renderer learned to wrap by measuring word widths and shrink-fit if it still won't fit. Switched export from PNG to JPEG (0.92) — paintings don't compress well as PNG.
+A long Renoir title overflowed the canvas, so the meme renderer learned to wrap by measuring word widths and shrink-fit if it still won't fit. Switched export from PNG to JPEG (0.92) - paintings don't compress well as PNG.
 
 - `over a certain length of text, we might need to split over 2 lines`
 - `can the download be jpeg? png for paintings is not efficient`
 
-#### 11. WCAG 2.2 AA pass
+#### 11. Sunglasses
 
-A skill-driven a11y audit found focus suppression, missing landmarks, low-contrast neutral-400/500 text, no canvas alt, unlabelled inputs, and tab buttons posing as plain buttons. Fixed each — focus-visible outline, `<main>` + `<nav>` + skip link, contrast bumped to neutral-200/300, `role="img" aria-label` on the canvas, real `<label>`s, ARIA tablist for source switching, `lang` attribute synced on locale change.
+MediaPipe also returns six face keypoints alongside the bounding box. Wired four sunglasses styles to the eye points: `deal-with-it` (the canonical pixel-art "thug life" pair, drawn from a 5×32 cell grid), plus `classic`, `aviator`, `round` rendered in pure Canvas 2D paths. Style is URL state (`?sg=...`) so it survives share links.
+
+The MediaPipe keypoint labels are subject-relative, so the rotation maths only worked once we re-sorted the eye pair by image x-coordinate.
+
+- `lets add a sunglasses option (default off)`
+- `can we have 3 different sunglasses to pick from`
+- `rename the current deal with it to something else and add a real deal with it variant`
+- `sunglasses option should be in the URL`
+
+#### 12. Mining IIIF metadata for captions
+
+Spent a moment looking at richer Presentation v3 manifests (Yale, etc.) - `metadata[]` exposes Medium, Culture, Classification, etc. Decided not to feed these into captions: most are too dry to be funny, and `Culture` is one ethnicity-shaped misstep away from a problem. Stuck with title/artist/date.
+
+- `they dont seem that funny though for meme text`
+- `culture could be used perhaps, but i dont want to offend`
+
+#### 13. WCAG 2.2 AA pass
+
+A skill-driven a11y audit found focus suppression, missing landmarks, low-contrast neutral-400/500 text, no canvas alt, unlabelled inputs, and tab buttons posing as plain buttons. Fixed each - focus-visible outline, `<main>` + `<nav>` + skip link, contrast bumped to neutral-200/300, `role="img" aria-label` on the canvas, real `<label>`s, ARIA tablist for source switching, `lang` attribute synced on locale change.
 
 - `do an a11y assessment across the site, I want AA 2.2`

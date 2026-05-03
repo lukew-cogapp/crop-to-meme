@@ -12,6 +12,19 @@ export type FaceBox = {
 	score: number;
 };
 
+export type Point = { x: number; y: number };
+
+export type FaceDetection = FaceBox & {
+	keypoints?: {
+		rightEye?: Point;
+		leftEye?: Point;
+		noseTip?: Point;
+		mouth?: Point;
+		rightEar?: Point;
+		leftEar?: Point;
+	};
+};
+
 let detectorPromise: Promise<FaceDetector> | null = null;
 
 async function loadDetector(): Promise<FaceDetector> {
@@ -27,17 +40,43 @@ async function loadDetector(): Promise<FaceDetector> {
 	return detectorPromise;
 }
 
-export async function detectFaces(img: HTMLImageElement): Promise<FaceBox[]> {
+const KP_LABELS = [
+	"rightEye",
+	"leftEye",
+	"noseTip",
+	"mouth",
+	"rightEar",
+	"leftEar",
+] as const;
+
+export async function detectFaces(
+	img: HTMLImageElement,
+): Promise<FaceDetection[]> {
 	const detector = await loadDetector();
 	const result = detector.detect(img);
+	const w = img.naturalWidth;
+	const h = img.naturalHeight;
 	return (result.detections ?? [])
-		.map((d) => {
+		.map((d): FaceDetection | null => {
 			const b = d.boundingBox;
 			if (!b) return null;
 			const score = d.categories?.[0]?.score ?? 0;
-			return { x: b.originX, y: b.originY, w: b.width, h: b.height, score };
+			const keypoints: FaceDetection["keypoints"] = {};
+			(d.keypoints ?? []).forEach((kp, i) => {
+				const label = KP_LABELS[i];
+				if (!label) return;
+				keypoints[label] = { x: kp.x * w, y: kp.y * h };
+			});
+			return {
+				x: b.originX,
+				y: b.originY,
+				w: b.width,
+				h: b.height,
+				score,
+				keypoints,
+			};
 		})
-		.filter((f): f is FaceBox => f !== null);
+		.filter((f): f is FaceDetection => f !== null);
 }
 
 export function expandBox(

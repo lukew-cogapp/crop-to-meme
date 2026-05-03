@@ -128,7 +128,7 @@ export async function loadIiifSource(input: string): Promise<IiifImage[]> {
 			res = await fetch(url);
 		} catch {
 			throw new Error(
-				"could not fetch URL — likely CORS-blocked. Try pasting the JSON directly.",
+				"could not fetch URL - likely CORS-blocked. Try pasting the JSON directly.",
 			);
 		}
 		if (!res.ok) throw new Error(`fetch failed: ${res.status}`);

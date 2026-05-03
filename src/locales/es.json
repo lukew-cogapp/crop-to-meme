@@ -12,7 +12,11 @@
 		"primaryNav": "Principal"
 	},
 	"home": {
-		"sourceTabsLabel": "Fuente"
+		"sourceTabsLabel": "Fuente",
+		"howToTitle": "Cómo funciona",
+		"step1": "1. Elige una obra - busca en el Art Institute of Chicago, o pega cualquier URL de info.json o manifiesto IIIF.",
+		"step2": "2. Elige un rostro - MediaPipe detecta los rostros en tu navegador.",
+		"step3": "3. Texto + compartir - leyenda automática desde los metadatos. Edita, mezcla, copia el enlace o descarga JPEG."
 	},
 	"search": {
 		"label": "Buscar en {{provider}}",
@@ -37,6 +41,14 @@
 		"topPlaceholder": "Texto superior",
 		"bottomPlaceholder": "Texto inferior",
 		"shuffle": "🎲 Mezclar leyenda",
+		"sunglasses": "🕶️ Gafas de sol",
+		"sunglassesOff": "Ninguna",
+		"sunglassesStyle": {
+			"deal-with-it": "Deal with it",
+			"classic": "Clásicas",
+			"aviator": "Aviador",
+			"round": "Redondas"
+		},
 		"copyLink": "🔗 Copiar enlace",
 		"copied": "✓ Copiado",
 		"download": "Descargar JPG",

@@ -1,4 +1,12 @@
+import type { Point } from "./faces";
+import { drawSunglasses, type SunglassesStyle } from "./sunglasses";
+
 export type MemeText = { top: string; bottom: string };
+export type EyePair = { left: Point; right: Point };
+export type MemeOpts = {
+	sunglasses?: EyePair[];
+	sunglassesStyle?: SunglassesStyle;
+};
 
 const MAX_LINES = 3;
 
@@ -50,6 +58,7 @@ export function drawMeme(
 	canvas: HTMLCanvasElement,
 	img: HTMLImageElement,
 	text: MemeText,
+	opts: MemeOpts = {},
 ): void {
 	const ctx = canvas.getContext("2d");
 	if (!ctx) throw new Error("no 2d context");
@@ -57,6 +66,12 @@ export function drawMeme(
 	canvas.width = img.naturalWidth;
 	canvas.height = img.naturalHeight;
 	ctx.drawImage(img, 0, 0);
+
+	if (opts.sunglasses) {
+		for (const pair of opts.sunglasses) {
+			drawSunglasses(ctx, pair.left, pair.right, opts.sunglassesStyle);
+		}
+	}
 
 	const baseSize = Math.max(32, Math.round(canvas.width / 12));
 	const minSize = Math.max(20, Math.round(baseSize * 0.5));

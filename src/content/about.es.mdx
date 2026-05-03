@@ -20,11 +20,11 @@ Explora obras IIIF, detecta rostros, recorta una porción, añade texto estilo m
 
 ### Arquitectura
 
-- `lib/` — módulos puros: cliente AIC, generador de URLs IIIF, parser de fuentes IIIF, wrapper del detector facial, cargador de imágenes, render del meme, plantillas de leyenda.
-- `providers/` — registro de fuentes ampliable (búsqueda AIC, pegar IIIF). Añadir nuevos proveedores no requiere tocar las páginas.
-- `pages/` — Inicio / Rostros / Meme / Acerca de. Cada página lee su estado de los parámetros de la URL, así cualquier meme es un enlace compartible.
-- `locales/en.json` y `locales/es.json` — todas las cadenas de UI viven aquí, accesibles vía `useTranslation()`. Los datos en tiempo de ejecución (títulos de obras, etiquetas IIIF) viven en el código.
-- `content/about.mdx` y `about.es.mdx` — texto largo, intercambiado en runtime según el idioma detectado.
+- `lib/` - módulos puros: cliente AIC, generador de URLs IIIF, parser de fuentes IIIF, wrapper del detector facial, cargador de imágenes, render del meme, plantillas de leyenda.
+- `providers/` - registro de fuentes ampliable (búsqueda AIC, pegar IIIF). Añadir nuevos proveedores no requiere tocar las páginas.
+- `pages/` - Inicio / Rostros / Meme / Acerca de. Cada página lee su estado de los parámetros de la URL, así cualquier meme es un enlace compartible.
+- `locales/en.json` y `locales/es.json` - todas las cadenas de UI viven aquí, accesibles vía `useTranslation()`. Los datos en tiempo de ejecución (títulos de obras, etiquetas IIIF) viven en el código.
+- `content/about.mdx` y `about.es.mdx` - texto largo, intercambiado en runtime según el idioma detectado.
 
 ### Hecho con Claude Code
 
@@ -32,7 +32,7 @@ Esta fue una conversación abierta con Claude Code, no una especificación. Cada
 
 #### 1. Elegir dirección
 
-Empezamos abierto. Claude propuso varios experimentos IIIF — visores, máquinas del tiempo, generadores de bordados. Elegimos "recorta y memea" por ser lo más juguetón y entregable en una sesión.
+Empezamos abierto. Claude propuso varios experimentos IIIF - visores, máquinas del tiempo, generadores de bordados. Elegimos "recorta y memea" por ser lo más juguetón y entregable en una sesión.
 
 #### 2. Elegir el detector facial
 
@@ -60,7 +60,7 @@ react-router-dom con router por hash. Cada vista de meme codifica fuente, regió
 
 #### 8. i18n bien hecho
 
-Primero un `t()` casero. Luego español. Luego un context. Luego Claude señaló que estábamos reinventando react-i18next — cambiamos a esa librería, conservando los JSON.
+Primero un `t()` casero. Luego español. Luego un context. Luego Claude señaló que estábamos reinventando react-i18next - cambiamos a esa librería, conservando los JSON.
 
 #### 9. MDX para esta página
 
@@ -70,6 +70,16 @@ Esta narrativa era un enredo de TSX. Pasada a MDX para que el texto pueda crecer
 
 Un título largo de Renoir desbordó el canvas, así que el render del meme aprendió a partir por palabra y reducir tamaño si aún no entra. La exportación pasó de PNG a JPEG (0.92).
 
-#### 11. Pase WCAG 2.2 AA
+#### 11. Gafas de sol
+
+MediaPipe también devuelve seis puntos clave por rostro. Cableamos cuatro estilos de gafas a las posiciones de los ojos: `deal-with-it` (el clásico "thug life" pixelado, dibujado desde una rejilla de 5×32 celdas), más `classic`, `aviator`, `round` en Canvas 2D. El estilo va en la URL (`?sg=...`).
+
+Las etiquetas de los puntos clave de MediaPipe son relativas al sujeto, así que la rotación sólo funcionó tras ordenar el par de ojos por la coordenada x de la imagen.
+
+#### 12. Minar metadatos IIIF
+
+Miramos manifiestos Presentation v3 más ricos (Yale) - `metadata[]` expone Medio, Cultura, Clasificación. Decidimos no alimentar leyendas con esto: casi todo es demasiado seco, y `Cultura` está a un paso de ser ofensivo. Nos quedamos con título/artista/fecha.
+
+#### 13. Pase WCAG 2.2 AA
 
 Una auditoría con la skill correspondiente encontró supresión de focus, falta de landmarks, contraste bajo en neutral-400/500, canvas sin alt, inputs sin etiqueta y botones de tabs disfrazados de botones normales. Todo arreglado.
