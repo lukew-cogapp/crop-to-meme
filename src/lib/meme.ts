@@ -75,7 +75,7 @@ export function drawMeme(
 
 	const baseSize = Math.max(32, Math.round(canvas.width / 12));
 	const minSize = Math.max(20, Math.round(baseSize * 0.5));
-	const sideMargin = baseSize * 0.4;
+	const sideMargin = baseSize * 0.8;
 	const maxWidth = canvas.width - sideMargin * 2;
 	const edgeMargin = baseSize * 0.6;
 
