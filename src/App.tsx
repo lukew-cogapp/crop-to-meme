@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, Route, Routes } from "react-router-dom";
 import "./providers";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { MediaPipeLink } from "./components/MediaPipeLink";
 import { AboutPage } from "./pages/AboutPage";
 import { FacesPage } from "./pages/FacesPage";
 import { HomePage } from "./pages/HomePage";
@@ -21,7 +22,12 @@ export default function App() {
 					<Link to="/" className="text-3xl font-bold hover:text-white">
 						{t("app.title")}
 					</Link>
-					<p className="text-neutral-300 text-sm mt-1">{t("app.tagline")}</p>
+					<p className="text-neutral-300 text-sm mt-1">
+						<Trans
+							i18nKey="app.tagline"
+							components={{ mp: <MediaPipeLink /> }}
+						/>
+					</p>
 				</div>
 				<nav
 					aria-label={t("app.primaryNav")}

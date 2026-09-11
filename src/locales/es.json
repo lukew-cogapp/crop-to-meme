@@ -1,7 +1,7 @@
 {
 	"app": {
 		"title": "Recorta y Memea",
-		"tagline": "Obras IIIF · detección facial con MediaPipe · enlaces compartibles",
+		"tagline": "Obras IIIF · detección facial con <mp>MediaPipe</mp> · enlaces compartibles",
 		"about": "Acerca de",
 		"notFound": "No encontrado.",
 		"loading": "Cargando…",
@@ -15,7 +15,7 @@
 		"sourceTabsLabel": "Fuente",
 		"howToTitle": "Cómo funciona",
 		"step1": "1. Elige una obra - busca en una colección de museo, o pega cualquier URL de info.json o manifiesto IIIF.",
-		"step2": "2. Elige un rostro - MediaPipe detecta los rostros en tu navegador.",
+		"step2": "2. Elige un rostro - <mp>MediaPipe</mp> detecta los rostros en tu navegador.",
 		"step3": "3. Texto + compartir - leyenda automática desde los metadatos. Edita, mezcla, copia el enlace o descarga JPEG.",
 		"randomButton": "🎲 Obra aleatoria",
 		"randomLoading": "Buscando algo…",

@@ -1,7 +1,7 @@
 {
 	"app": {
 		"title": "Crop to Meme",
-		"tagline": "IIIF artworks · MediaPipe face detection · shareable URLs",
+		"tagline": "IIIF artworks · <mp>MediaPipe</mp> face detection · shareable URLs",
 		"about": "About",
 		"notFound": "Not found.",
 		"loading": "Loading…",
@@ -15,7 +15,7 @@
 		"sourceTabsLabel": "Source",
 		"howToTitle": "How it works",
 		"step1": "1. Pick an artwork - search a museum collection, or paste any IIIF info.json / manifest URL.",
-		"step2": "2. Pick a face - MediaPipe runs in your browser to find faces.",
+		"step2": "2. Pick a face - <mp>MediaPipe</mp> runs in your browser to find faces.",
 		"step3": "3. Caption + share - auto-captioned from the artwork's metadata. Edit, shuffle, copy the link, or download as JPEG.",
 		"randomButton": "🎲 Random artwork",
 		"randomLoading": "Finding something…",

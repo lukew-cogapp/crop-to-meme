@@ -1,7 +1,8 @@
 import { type KeyboardEvent, useId, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ManifestPaste } from "../components/ManifestPaste";
+import { MediaPipeLink } from "../components/MediaPipeLink";
 import { ProviderSearch } from "../components/ProviderSearch";
 import { listProviders } from "../lib/providers";
 import { pasteRef } from "../providers/iiif-paste";
@@ -109,7 +110,12 @@ export function HomePage() {
 				{/* biome-ignore lint/a11y/noRedundantRoles: VoiceOver+Safari strip list semantics when list-style is none */}
 				<ol role="list" className="space-y-1 list-none">
 					<li>{t("home.step1")}</li>
-					<li>{t("home.step2")}</li>
+					<li>
+						<Trans
+							i18nKey="home.step2"
+							components={{ mp: <MediaPipeLink /> }}
+						/>
+					</li>
 					<li>{t("home.step3")}</li>
 				</ol>
 			</section>
