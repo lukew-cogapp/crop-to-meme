@@ -1,4 +1,10 @@
-const AIC_IIIF = "https://www.artic.edu/iiif/2";
+// artic.edu 403s requests whose Referer it doesn't recognise, so AIC images only
+// load through the proxy in worker/. Unset means no AIC images; the provider
+// flags itself broken to match.
+export const AIC_PROXY: string | undefined =
+	import.meta.env.VITE_AIC_IIIF_PROXY || undefined;
+
+const AIC_IIIF = AIC_PROXY ?? "https://www.artic.edu/iiif/2";
 
 export type Region = { x: number; y: number; w: number; h: number } | "full";
 export type Size = { width?: number; height?: number } | "full" | "max";

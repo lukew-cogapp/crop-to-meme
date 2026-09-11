@@ -1,12 +1,8 @@
-// artic.edu/iiif/2 returns 403 unless the request Origin/Referer is one
-// Cloudflare allowlists (projectmirador.org and iiif.io get 200, our origins do
-// not). Allowed origins get access-control-allow-origin: *, so the images become
-// usable again behind a proxy we control; until then the tab is flagged broken.
 import { searchArtworks } from "../lib/aic";
-import { fetchImageInfo, iiifUrl } from "../lib/iiif";
+import { AIC_PROXY, fetchImageInfo, iiifUrl } from "../lib/iiif";
 import { type Provider, registerProvider } from "../lib/providers";
 
-const BASE = "https://www.artic.edu/iiif/2";
+const BASE = AIC_PROXY ?? "https://www.artic.edu/iiif/2";
 
 export const aicProvider: Provider = {
 	id: "aic",
@@ -14,7 +10,8 @@ export const aicProvider: Provider = {
 	nameKey: "providers.aic",
 	kind: "search",
 	defaultQuery: "",
-	broken: true,
+	// artic.edu blocks our origins outright; only the proxy makes this work.
+	broken: !AIC_PROXY,
 	search: async (query) => {
 		const r = await searchArtworks(query, { portraitsOnly: true });
 		return r.data
