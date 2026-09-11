@@ -30,7 +30,7 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 		(async () => {
 			try {
 				const detectUrl = iiifUrlFromBase(serviceBase, "full", {
-					width: DETECT_WIDTH,
+					width: Math.min(DETECT_WIDTH, fullW),
 				});
 				const img = await loadImage(detectUrl);
 				const detected = await detectFaces(img);
@@ -81,7 +81,9 @@ export function FacePicker({ serviceBase, fullSize, onPick }: Props) {
 					className="rounded-lg overflow-hidden border border-neutral-700 hover:border-neutral-300 transition"
 				>
 					<img
-						src={iiifUrlFromBase(serviceBase, face, { width: 400 })}
+						src={iiifUrlFromBase(serviceBase, face, {
+							width: Math.min(400, Math.round(face.w)),
+						})}
 						alt={t("faces.alt", { n: i + 1 })}
 						className="w-full aspect-square object-cover"
 						loading="lazy"

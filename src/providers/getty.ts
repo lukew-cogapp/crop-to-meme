@@ -12,6 +12,7 @@ type GettyResult = {
 	thumbnail?: {
 		image_service?: string;
 		alt_text?: string;
+		size_restricted?: boolean;
 	};
 };
 
@@ -61,7 +62,7 @@ export const gettyProvider: Provider = {
 		if (!res.ok) throw new Error(`Getty search failed: ${res.status}`);
 		const json = (await res.json()) as GettyResponse;
 		return (json.data ?? [])
-			.filter((r) => r.thumbnail?.image_service)
+			.filter((r) => r.thumbnail?.image_service && !r.thumbnail.size_restricted)
 			.map((r) => {
 				const meta = parseDescription(r.description);
 				const artist = artistOnly(meta.artist);

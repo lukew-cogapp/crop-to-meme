@@ -62,7 +62,9 @@ export function MemeEditor({
 		setReady(false);
 		setImageError(null);
 		setEyePairs([]);
-		const url = iiifUrlFromBase(serviceBase, region, { width: RENDER_WIDTH });
+		const url = iiifUrlFromBase(serviceBase, region, {
+			width: Math.min(RENDER_WIDTH, Math.round(region.w)),
+		});
 		loadImage(url)
 			.then((img) => {
 				if (cancelled) return;
