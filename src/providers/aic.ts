@@ -1,8 +1,12 @@
+// artic.edu/iiif/2 returns 403 to our origins, and to datacentre IPs regardless
+// of Referer, so a proxy does not recover it either (a Cloudflare Worker was
+// tried and blocked). Search still runs; the tab is flagged so the dead
+// thumbnails are explained.
 import { searchArtworks } from "../lib/aic";
-import { AIC_PROXY, fetchImageInfo, iiifUrl } from "../lib/iiif";
+import { fetchImageInfo, iiifUrl } from "../lib/iiif";
 import { type Provider, registerProvider } from "../lib/providers";
 
-const BASE = AIC_PROXY ?? "https://www.artic.edu/iiif/2";
+const BASE = "https://www.artic.edu/iiif/2";
 
 export const aicProvider: Provider = {
 	id: "aic",
@@ -10,8 +14,7 @@ export const aicProvider: Provider = {
 	nameKey: "providers.aic",
 	kind: "search",
 	defaultQuery: "",
-	// artic.edu blocks our origins outright; only the proxy makes this work.
-	broken: !AIC_PROXY,
+	broken: true,
 	search: async (query) => {
 		const r = await searchArtworks(query, { portraitsOnly: true });
 		return r.data
