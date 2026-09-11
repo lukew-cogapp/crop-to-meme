@@ -1,7 +1,8 @@
 import Image from "@samvera/clover-iiif/image";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
+import { CloverLink } from "../components/CloverLink";
 import { providerForRef, type ResolvedSource } from "../lib/providers";
 
 export function ViewPage() {
@@ -40,6 +41,12 @@ export function ViewPage() {
 					</Link>
 				</p>
 				<h1 className="text-lg font-semibold text-neutral-100">{title}</h1>
+				<p className="text-xs text-neutral-300">
+					<Trans
+						i18nKey="view.poweredBy"
+						components={{ clover: <CloverLink /> }}
+					/>
+				</p>
 			</header>
 
 			{error && (

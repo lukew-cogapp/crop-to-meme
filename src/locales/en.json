@@ -73,7 +73,8 @@
 	},
 	"view": {
 		"title": "View original",
-		"viewerLabel": "Deep-zoom viewer for {{title}}"
+		"viewerLabel": "Deep-zoom viewer for {{title}}",
+		"poweredBy": "Powered by <clover>Clover IIIF</clover>"
 	},
 	"providers": {
 		"aic": "Art Institute of Chicago",
