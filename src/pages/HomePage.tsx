@@ -44,7 +44,7 @@ export function HomePage() {
 		setRandomError(null);
 		setRandomLoading(true);
 		const searchProviders = providers.filter(
-			(p) => p.kind === "search" && p.search,
+			(p) => p.kind === "search" && p.search && !p.broken,
 		);
 		const tried = new Set<string>();
 		try {
@@ -157,6 +157,9 @@ export function HomePage() {
 							}`}
 						>
 							{name}
+							{p.broken && (
+								<span className="opacity-70"> {t("home.brokenSuffix")}</span>
+							)}
 						</button>
 					);
 				})}
@@ -168,6 +171,14 @@ export function HomePage() {
 					role="tabpanel"
 					aria-labelledby={`${tabsId}-tab-${active.id}`}
 				>
+					{active.broken && (
+						<p
+							role="alert"
+							className="mb-3 rounded-md border border-amber-700/60 bg-amber-950/40 p-3 text-sm text-amber-100"
+						>
+							{t("home.brokenNotice")}
+						</p>
+					)}
 					{active.kind === "search" && (
 						<ProviderSearch
 							provider={{

@@ -14,12 +14,14 @@
 	"home": {
 		"sourceTabsLabel": "Source",
 		"howToTitle": "How it works",
-		"step1": "1. Pick an artwork - search the Art Institute of Chicago, or paste any IIIF info.json / manifest URL.",
+		"step1": "1. Pick an artwork - search a museum collection, or paste any IIIF info.json / manifest URL.",
 		"step2": "2. Pick a face - MediaPipe runs in your browser to find faces.",
 		"step3": "3. Caption + share - auto-captioned from the artwork's metadata. Edit, shuffle, copy the link, or download as JPEG.",
 		"randomButton": "🎲 Random artwork",
 		"randomLoading": "Finding something…",
-		"randomError": "No luck. Try a tab below."
+		"randomError": "No luck. Try a tab below.",
+		"brokenSuffix": "(not working)",
+		"brokenNotice": "The Art Institute of Chicago now blocks image requests from other websites, so results here will not load. Try Wellcome Collection or Getty Museum instead."
 	},
 	"search": {
 		"label": "Search {{provider}}",

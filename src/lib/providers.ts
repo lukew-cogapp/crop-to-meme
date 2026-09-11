@@ -22,6 +22,8 @@ export type Provider = {
 	nameKey?: string;
 	kind: "search" | "paste";
 	defaultQuery?: string;
+	/** Upstream is refusing our requests; tab stays visible but flagged. */
+	broken?: boolean;
 	search?: (query: string) => Promise<SearchHit[]>;
 	resolve: (sourceRef: string) => Promise<ResolvedSource>;
 	renderInput?: () => ReactNode;
