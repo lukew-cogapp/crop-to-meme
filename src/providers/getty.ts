@@ -57,12 +57,18 @@ export const gettyProvider: Provider = {
 		const url = new URL(SEARCH_API);
 		if (query.trim()) url.searchParams.set("q", query);
 		url.searchParams.set("source_app", "museum_collection_pages");
+		url.searchParams.set("open_content", "true");
 		url.searchParams.set("size", "30");
 		const res = await fetch(url);
 		if (!res.ok) throw new Error(`Getty search failed: ${res.status}`);
 		const json = (await res.json()) as GettyResponse;
 		return (json.data ?? [])
-			.filter((r) => r.thumbnail?.image_service && !r.thumbnail.size_restricted)
+			.filter(
+				(r) =>
+					r.thumbnail?.image_service &&
+					!r.thumbnail.size_restricted &&
+					r.open_content,
+			)
 			.map((r) => {
 				const meta = parseDescription(r.description);
 				const artist = artistOnly(meta.artist);

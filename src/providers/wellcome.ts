@@ -3,6 +3,10 @@ import { type Provider, registerProvider } from "../lib/providers";
 const SEARCH_API = "https://api.wellcomecollection.org/catalogue/v2/works";
 const IIIF_RE = /https:\/\/iiif\.wellcomecollection\.org\/image\/([^/]+)/;
 
+// Public domain and attribution-only. Excludes cc-by-nc and in-copyright, since
+// the meme is a derivative the user downloads.
+const OPEN_LICENSES = "cc-by,cc0,pdm";
+
 type WellcomeWork = {
 	id: string;
 	title: string;
@@ -41,6 +45,7 @@ export const wellcomeProvider: Provider = {
 		if (query.trim()) url.searchParams.set("query", query);
 		url.searchParams.set("workType", "k,q"); // Pictures, Digital Images
 		url.searchParams.set("availabilities", "online");
+		url.searchParams.set("items.locations.license", OPEN_LICENSES);
 		url.searchParams.set("include", "contributors,production");
 		url.searchParams.set("pageSize", "30");
 		const res = await fetch(url);
